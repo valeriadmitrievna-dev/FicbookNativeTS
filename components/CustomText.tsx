@@ -2,7 +2,7 @@ import React from "react";
 import { useTheme } from "@react-navigation/native";
 import { StyleProp, Text, TextStyle } from "react-native";
 
-interface TextProps {
+export interface TextProps {
   size?: number;
   line?: number;
   color?: string;
@@ -13,7 +13,7 @@ interface TextProps {
   mt?: number;
   center?: boolean;
   capitalize?: boolean;
-  textDecorationLine?: string;
+  underlined?: boolean;
   onPress?: (el: any) => void;
   italic?: boolean;
   width?: string | number;
@@ -32,11 +32,11 @@ const CustomText: React.FC<TextProps> = ({
   mt = 0,
   center = false,
   capitalize = false,
-  textDecorationLine = "none",
+  underlined = false,
   onPress,
   italic = false,
   width = "auto",
-  numberOfLines = 0
+  numberOfLines = 0,
 }) => {
   const theme = useTheme();
 
@@ -55,7 +55,7 @@ const CustomText: React.FC<TextProps> = ({
           textAlign: center ? "center" : "left",
           textTransform: capitalize ? "capitalize" : "none",
           lineHeight: line,
-          textDecorationLine,
+          textDecorationLine: underlined ? "underline" : "none",
           width,
           maxWidth: "100%",
         } as StyleProp<TextStyle>

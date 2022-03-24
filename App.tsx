@@ -29,11 +29,10 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "./screens/Home";
-import Fanfic from "./screens/Fanfic";
-import Fandom from "./screens/Fandom";
 import { colors } from "./utils/colors";
 import TabBarButton from "./components/TabBarButton";
 import Popular from "./screens/Popular";
+import Fanfic from "./screens/Fanfic";
 
 const CustomLightTheme: ExtendedTheme = {
   ...DefaultTheme,
@@ -74,6 +73,25 @@ const CustomDarkTheme: ExtendedTheme = {
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const Main = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      headerShown: false,
+      tabBarStyle: {
+        elevation: 0,
+        shadowOpacity: 0,
+        height: 60,
+        borderTopWidth: 0,
+      },
+      tabBarButton: props => <TabBarButton {...props} />,
+    })}
+    initialRouteName="home"
+  >
+    <Tab.Screen name="home" component={Home} />
+    <Tab.Screen name="popular" component={Popular} />
+  </Tab.Navigator>
+);
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Montserrat_100Thin,
@@ -104,26 +122,15 @@ export default function App() {
       <NavigationContainer
         theme={scheme === "light" ? CustomLightTheme : CustomDarkTheme}
       >
-        <Tab.Navigator
+        <Stack.Navigator
           screenOptions={({ route }) => ({
             headerShown: false,
-            tabBarStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-              height: 60,
-              borderTopWidth: 0,
-            },
-            tabBarButton: props => <TabBarButton {...props} />,
           })}
-          initialRouteName="popular"
+          initialRouteName="main"
         >
-          <Tab.Group>
-            <Tab.Screen name="home" component={Home} />
-            <Tab.Screen name="popular" component={Popular} />
-            <Tab.Screen name="fanfic" component={Fanfic} />
-            <Tab.Screen name="fandom" component={Fandom} />
-          </Tab.Group>
-        </Tab.Navigator>
+          <Tab.Screen name="main" component={Main} />
+          <Tab.Screen name="fanfic" component={Fanfic} />
+        </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
   );

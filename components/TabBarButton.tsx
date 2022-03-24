@@ -10,7 +10,7 @@ const TabBarButton = ({ accessibilityState, to, onPress }: BottomTabBarButtonPro
   const color = accessibilityState?.selected
     ? theme.colors.text
     : `rgba(${hexToRgb(theme.colors.text)}, 0.5)`;
-  const route = to?.replace("/", "");
+  const route = to?.replace("/main/", "");
 
   return (
     <Pressable onPress={onPress} style={styles.button}>

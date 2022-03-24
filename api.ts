@@ -6,18 +6,15 @@ const instance = axios.create({
 });
 
 instance.interceptors.response.use(
-  response => {
-    // Do something with response data
-    console.log("response succesfull");
-    return response;
-  },
-  error => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
     const status = error.response?.status || 500;
-    // if (status === 403) {
-    //   originalRequest._retry = true;
-    //   return instance(originalRequest);
-    // }
+    if (status === 403) {
+      console.log("need refresh");
+      const res = await instance.get(originalRequest.url)
+      return res
+    }
     return Promise.reject(error);
   }
 );

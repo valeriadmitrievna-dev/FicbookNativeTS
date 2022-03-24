@@ -16,21 +16,25 @@ import Animated, {
 } from "react-native-reanimated";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
 import { hexToRgb } from "../utils/functions";
+import { ScrollToObject } from "../interfaces";
 
 interface PageContainerProps {
   backgroundColor?: string;
+  fullHeight?: boolean;
+  scrollTo?: ScrollToObject;
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({
   backgroundColor,
   children,
-  // scrollTo,
+  fullHeight,
+  scrollTo,
   // sticky = [],
 }) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  // const scrollRef = useRef();
+  const scrollRef = useRef<ScrollView>(null);
   const CONTENT_OFFSET_THRESHOLD = 200;
 
   const AnimatedTouchable = Animated.createAnimatedComponent(Pressable);
@@ -45,36 +49,33 @@ const PageContainer: React.FC<PageContainerProps> = ({
     };
   });
 
-  // const onPressTouch = () => {
-  //   scrollRef.current?.scrollTo({
-  //     y: 0,
-  //     animated: true,
-  //   });
-  // };
+  const onPressTouch = () => {
+    scrollRef.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  };
 
-  // const handleScroll = event => {
-  //   if (event.nativeEvent.contentOffset.y > CONTENT_OFFSET_THRESHOLD) {
-  //     opacity.value = 1;
-  //   } else {
-  //     opacity.value = 0;
-  //   }
-  // };
+  const handleScroll = (event: any) => {
+    if (event.nativeEvent.contentOffset.y > CONTENT_OFFSET_THRESHOLD) {
+      opacity.value = 1;
+    } else {
+      opacity.value = 0;
+    }
+  };
 
-  // useEffect(() => {
-  //   if (scrollTo?.y && !scrollTo?.loading) {
-  //     scrollRef.current?.scrollTo({
-  //       y: scrollTo.y,
-  //       animated: true,
-  //     });
-  //   }
-  // }, [scrollTo]);
+  useEffect(() => {
+    if (!!scrollTo?.y && !!scrollTo?.loaded) {
+      scrollRef.current?.scrollTo({
+        y: scrollTo.y,
+        animated: true,
+      });
+    }
+  }, [scrollTo]);
 
   return (
     <View>
-      <AnimatedTouchable
-        style={[styles.button, style]}
-        // onPress={onPressTouch}
-      >
+      <AnimatedTouchable style={[styles.button, style]} onPress={onPressTouch}>
         <Icon name="arrow-up" size={20} />
       </AnimatedTouchable>
       <ScrollView
@@ -82,10 +83,15 @@ const PageContainer: React.FC<PageContainerProps> = ({
         // refreshControl={false}
         style={[
           styles.container,
-          { backgroundColor: backgroundColor || theme.colors.background },
+          {
+            backgroundColor: backgroundColor || theme.colors.background,
+            minHeight: fullHeight
+              ? Dimensions.get("window").height
+              : Dimensions.get("window").height - 160,
+          },
         ]}
-        // ref={scrollRef}
-        // onScroll={handleScroll}
+        ref={scrollRef}
+        onScroll={handleScroll}
         // scrollEnabled={scrollable}
         // stickyHeaderIndices={sticky}
         contentContainerStyle={{ flexGrow: 1 }}
@@ -108,7 +114,6 @@ const createStyles = (theme: ExtendedTheme) =>
       paddingHorizontal: 15,
       paddingVertical: 10,
       flexGrow: 1,
-      minHeight: Dimensions.get("window").height - 160,
     },
     button: {
       position: "absolute",

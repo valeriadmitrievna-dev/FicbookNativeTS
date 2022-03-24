@@ -1,10 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useMemo, useRef } from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useMemo } from "react";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
-import { IAuthorShort, IFandom, IFanfic, IRatingNumber } from "../interfaces";
+import { IAuthor, IFandom, IFanfic, IRatingNumber } from "../interfaces";
 import CustomText from "./CustomText";
 import { colors } from "../utils/colors";
-import { RatingType, SexType, StatusType } from "../utils/variables";
 import Icon from "react-native-vector-icons/Ionicons";
 import Tag from "./Tag";
 
@@ -22,11 +21,13 @@ export default function Fanfic({
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const pressAuthor = (a: IAuthorShort) => {
+  const pressAuthor = (a: IAuthor) => {
     console.log(a.name);
   };
   const pressTitle = () => {
-    console.log(fanfic.title);
+    navigation.push("fanfic", {
+      id: fanfic.id,
+    });
   };
   const pressFandom = (f: IFandom) => {
     console.log(f.title);
@@ -43,8 +44,7 @@ export default function Fanfic({
         style={[
           styles.container,
           {
-            borderLeftColor:
-              colors.direction[fanfic.direction.value as keyof SexType],
+            borderLeftColor: colors.direction[fanfic.direction.value],
             borderTopLeftRadius: !!rating_number ? 0 : 6,
             borderTopEndRadius: !!rating_number ? 0 : 6,
           },
@@ -56,8 +56,7 @@ export default function Fanfic({
               styles.badge,
               {
                 borderBottomLeftRadius: 0,
-                backgroundColor:
-                  colors.direction[fanfic.direction.value as keyof SexType],
+                backgroundColor: colors.direction[fanfic.direction.value],
               },
             ]}
           >
@@ -89,8 +88,7 @@ export default function Fanfic({
             style={[
               styles.badge,
               {
-                backgroundColor:
-                  colors.rating[fanfic.rating.value as keyof RatingType],
+                backgroundColor: colors.rating[fanfic.rating.value],
               },
             ]}
           >
@@ -106,17 +104,14 @@ export default function Fanfic({
             style={[
               styles.badge,
               {
-                backgroundColor:
-                  colors.status[fanfic.status.value as keyof StatusType],
+                backgroundColor: colors.status[fanfic.status.value],
               },
             ]}
           >
             <CustomText
               size={13}
               weight="500Medium"
-              color={
-                colors.statusesText[fanfic.status.value as keyof StatusType]
-              }
+              color={colors.statusesText[fanfic.status.value]}
             >
               {fanfic.status.title}
             </CustomText>
@@ -176,19 +171,26 @@ export default function Fanfic({
           )}
         </View>
         <View style={styles.content}>
+          {!!fanfic.cover && (
+            <Image source={{ uri: fanfic.cover }} style={styles.cover} />
+          )}
           <CustomText
             weight="600SemiBold"
             size={17}
-            mb={4}
+            mb={6}
+            mt={4}
             onPress={pressTitle}
+            underlined
           >
             {fanfic.title}
           </CustomText>
           <Text style={{ marginBottom: 4 }}>
-            <CustomText weight="500Medium">Автор:</CustomText>{" "}
+            <CustomText weight="500Medium">Авторы:</CustomText>{" "}
             {fanfic.authors.map((a, id) => (
-              <CustomText key={`author_${a.id}`} onPress={() => pressAuthor(a)}>
-                {a.name}
+              <CustomText key={`author_${fanfic.id}_${a.id}`}>
+                <CustomText onPress={() => pressAuthor(a)} underlined>
+                  {a.name}
+                </CustomText>
                 {id !== fanfic.authors.length - 1 && ", "}
               </CustomText>
             ))}
@@ -196,11 +198,10 @@ export default function Fanfic({
           <Text style={{ marginBottom: 4 }}>
             <CustomText weight="500Medium">Фэндом:</CustomText>{" "}
             {fanfic.fandoms.map((f, id) => (
-              <CustomText
-                key={`fandom_${f.slug}`}
-                onPress={() => pressFandom(f)}
-              >
-                {f.title}
+              <CustomText key={`fandom_${fanfic.id}_${f.slug}`}>
+                <CustomText onPress={() => pressFandom(f)} underlined>
+                  {f.title}
+                </CustomText>
                 {id !== fanfic.fandoms.length - 1 && ", "}
               </CustomText>
             ))}
@@ -209,7 +210,7 @@ export default function Fanfic({
             <Text style={{ marginBottom: 4 }}>
               <CustomText weight="500Medium">Пэйринг и персонажи:</CustomText>{" "}
               {fanfic.pairings?.map((p, id) => (
-                <CustomText key={`fandom_${p.id}`}>
+                <CustomText key={`${fanfic.id}_fandom_${p.id}`}>
                   {p.title}
                   {id !== (fanfic.pairings?.length || 0) - 1 && ", "}
                 </CustomText>
@@ -220,10 +221,12 @@ export default function Fanfic({
             <CustomText weight="500Medium">Размер:</CustomText>{" "}
             <CustomText>{fanfic.size}</CustomText>
           </Text>
-          <Text style={{ marginBottom: 8 }}>
-            <CustomText weight="500Medium">{fanfic.date.title}</CustomText>{" "}
-            <CustomText>{fanfic.date.text}</CustomText>
-          </Text>
+          {!!fanfic.date && (
+            <Text style={{ marginBottom: 8 }}>
+              <CustomText weight="500Medium">{fanfic.date.title}</CustomText>{" "}
+              <CustomText>{fanfic.date.text}</CustomText>
+            </Text>
+          )}
           <View style={styles.tags}>
             {fanfic.tags?.map(tag => (
               <Tag tag={tag} key={`${fanfic.id}_${tag.id}`} />
@@ -278,5 +281,10 @@ const createStyles = (theme: ExtendedTheme) =>
       backgroundColor: theme.colors.text,
       marginTop: 5,
       marginBottom: 10,
+    },
+    cover: {
+      width: "100%",
+      height: 275,
+      borderRadius: 4,
     },
   });

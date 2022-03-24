@@ -62,6 +62,7 @@ export const colors = {
     mixed: "#f4ab00",
     other: "#292D32",
     article: "#292D32",
+    all: "#c69e6b",
   },
   dark_directions: {
     femslash: "#E54887",

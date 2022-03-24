@@ -1,11 +1,15 @@
-import { StyleSheet, ActivityIndicator, View } from "react-native";
+import { StyleSheet, ActivityIndicator, View, ViewStyle } from "react-native";
 import React from "react";
 import { useTheme } from "@react-navigation/native";
 
-export default function SmallLoader() {
+interface SmallLoaderProps {
+  style?: ViewStyle;
+}
+
+export default function SmallLoader({ style }: SmallLoaderProps) {
   const theme = useTheme();
   return (
-    <View style={styles.loading}>
+    <View style={[styles.loading, style]}>
       <ActivityIndicator color={theme.colors.text} size={30} />
     </View>
   );

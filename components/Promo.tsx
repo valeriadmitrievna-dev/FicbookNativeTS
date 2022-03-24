@@ -11,8 +11,9 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
 import { IPromo } from "../interfaces";
 import { colors } from "../utils/colors";
-import { sex, SexType } from "../utils/variables";
+import { sex, DirectionList } from "../utils/variables";
 import { hexToRgb } from "../utils/functions";
+import Direction from "./Direction";
 
 interface CoversObject {
   femslash: string;
@@ -46,8 +47,8 @@ export default function Promo({ promo, navigation }: PromoProps) {
   return (
     <TouchableOpacity
       onPress={() =>
-        navigation.navigate("fanfic", {
-          source: promo.id,
+        navigation.push("fanfic", {
+          id: promo.id,
         })
       }
     >
@@ -55,7 +56,7 @@ export default function Promo({ promo, navigation }: PromoProps) {
         style={[
           styles.promo,
           {
-            borderColor: colors.direction[promo.direction as keyof SexType],
+            borderColor: colors.direction[promo.direction as DirectionList],
           },
         ]}
         source={{
@@ -67,14 +68,14 @@ export default function Promo({ promo, navigation }: PromoProps) {
             styles.direction,
             {
               backgroundColor:
-                colors.direction[promo.direction as keyof SexType],
+                colors.direction[promo.direction as DirectionList],
             },
           ]}
         >
-          <Icon
-            name={sex[promo.direction as keyof SexType]}
-            color={theme.colors.promo.icon}
-            size={15}
+          <Direction
+            direction={promo.direction}
+            color={theme.colors.background}
+            size={18}
           />
         </View>
         <View style={styles.promo_footer}>

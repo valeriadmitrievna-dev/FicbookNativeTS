@@ -2,10 +2,9 @@ import { StyleSheet, View, Text } from "react-native";
 import React, { useMemo } from "react";
 import CustomText from "./CustomText";
 import Icon from "react-native-vector-icons/Feather";
-// import Tag from "./Tag";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
-import { IFandom, IRequest, ITag } from "../interfaces";
-import Tag from "./Tag";
+import { IFandom, IRequest } from "../interfaces";
+import Tags from "./Tags";
 
 interface RequestProps {
   request: IRequest;
@@ -48,7 +47,7 @@ export default function Request({ request, navigation }: RequestProps) {
         weight="500Medium"
         size={17}
         mb={5}
-        textDecorationLine="underline"
+        underlined
       >
         {request.title}
       </CustomText>
@@ -59,7 +58,7 @@ export default function Request({ request, navigation }: RequestProps) {
             {" "}
             <CustomText
               ml={5}
-              textDecorationLine="underline"
+              underlined
               onPress={() => pressFandom(f)}
             >
               {f.title}
@@ -68,22 +67,16 @@ export default function Request({ request, navigation }: RequestProps) {
           </Text>
         ))}
       </Text>
-      <Text style={{ marginBottom: 5 }}>
-        <CustomText textDecorationLine="underline">Рейтинг:</CustomText>{" "}
+      <Text style={{ marginBottom: 6 }}>
+        <CustomText underlined>Рейтинг:</CustomText>{" "}
         {request.ratings.map((r, id) => (
-          <CustomText>
+          <CustomText key={`${request.id}_${id}`}>
             {r}
             {id !== request.ratings.length - 1 && ", "}
           </CustomText>
         ))}
       </Text>
-      {!!request.tags?.length && (
-        <View style={styles.tags}>
-          {request.tags.map((tag: ITag) => (
-            <Tag tag={tag} key={tag.id} />
-          ))}
-        </View>
-      )}
+      {!!request.tags?.length && <Tags tags={request.tags} />}
       <View style={styles.line} />
       <CustomText>{request.content}</CustomText>
     </View>
@@ -103,11 +96,6 @@ const createStyles = (theme: ExtendedTheme) =>
       flexDirection: "row",
       alignItems: "center",
       marginBottom: 6,
-    },
-    tags: {
-      flexDirection: "row",
-      alignItems: "stretch",
-      flexWrap: "wrap",
     },
     line: {
       width: "100%",
