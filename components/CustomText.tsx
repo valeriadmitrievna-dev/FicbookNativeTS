@@ -1,11 +1,11 @@
 import React from "react";
 import { useTheme } from "@react-navigation/native";
-import { StyleProp, Text, TextStyle } from "react-native";
+import { StyleProp, Text, TextStyle, ColorValue } from "react-native";
 
 export interface TextProps {
   size?: number;
   line?: number;
-  color?: string;
+  color?: ColorValue;
   weight?: string;
   ml?: number;
   mr?: number;
@@ -18,6 +18,7 @@ export interface TextProps {
   italic?: boolean;
   width?: string | number;
   numberOfLines?: number;
+  style?: TextStyle;
 }
 
 const CustomText: React.FC<TextProps> = ({
@@ -37,6 +38,7 @@ const CustomText: React.FC<TextProps> = ({
   italic = false,
   width = "auto",
   numberOfLines = 0,
+  style,
 }) => {
   const theme = useTheme();
 
@@ -58,6 +60,7 @@ const CustomText: React.FC<TextProps> = ({
           textDecorationLine: underlined ? "underline" : "none",
           width,
           maxWidth: "100%",
+          ...style,
         } as StyleProp<TextStyle>
       }
       numberOfLines={numberOfLines}
