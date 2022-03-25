@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import PageContainer from "../components/PageContainer";
 import {
   ExtendedTheme,
@@ -14,36 +14,22 @@ import { IPromo, IRequest } from "../interfaces";
 import Promo from "../components/Promo";
 import Ionicon from "react-native-vector-icons/Ionicons";
 import Request from "../components/Request";
+import { usePromise } from "../hooks/usePromise";
 
-export default function Home() {
+function Home() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const navigation = useNavigation();
-  const [loaded, setLoaded] = useState<boolean>(false);
-  const [promos, setPromos] = useState<IPromo[]>([]);
-  const [requests, setRequests] = useState<IRequest[]>([]);
 
-  const getPromos = async () => {
-    try {
-      const { data } = await API.get("/");
-      setPromos(data.promos);
-      setRequests(data.requests);
-    } catch (error: any) {
-      console.log(error.message);
-    }
-    setLoaded(true);
-  };
-
-  useEffect(() => {
-    getPromos();
-  }, []);
+  const getPromos = API.get("/").then(d => d.data);
+  const [{ promos, requests }, error, pending] = usePromise(getPromos, {}, []);
 
   return (
     <PageContainer>
       <CustomText weight="700Bold" size={24} mb={16}>
         Ficbook
       </CustomText>
-      {loaded && !!promos.length && !!requests.length ? (
+      {!pending ? (
         <>
           <SearchFandom navigation={navigation} />
           <View style={[styles.sectionTitle, { marginTop: 16 }]}>
@@ -54,9 +40,9 @@ export default function Home() {
             </CustomText>
           </View>
           <View style={styles.promos}>
-            {promos.map(promo => (
+            {promos.map((promo: IPromo) => (
               <Promo
-                key={`${promo.title}_${promo.id}`}
+                key={`promo_${promo.id}`}
                 promo={promo}
                 navigation={navigation}
               />
@@ -69,8 +55,8 @@ export default function Home() {
               Горячие заявки
             </CustomText>
           </View>
-          {requests.map(req => (
-            <Request request={req} navigation={navigation} key={req.id} />
+          {requests.map((req: IRequest) => (
+            <Request request={req} navigation={navigation} key={`request_${req.id}`} />
           ))}
           <View style={styles.space} />
         </>
@@ -80,6 +66,8 @@ export default function Home() {
     </PageContainer>
   );
 }
+
+export default React.memo(Home);
 
 const createStyles = (theme: ExtendedTheme) =>
   StyleSheet.create({
