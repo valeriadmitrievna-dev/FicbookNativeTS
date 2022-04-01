@@ -1,6 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useMemo } from "react";
-import { ExtendedTheme, useTheme } from "@react-navigation/native";
+import React from "react";
 import FAIcon from "react-native-vector-icons/FontAwesome5";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import MIcon from "react-native-vector-icons/MaterialIcons";
@@ -13,8 +11,6 @@ interface DirectionProps {
 }
 
 export default function Direction({ direction, color, size }: DirectionProps) {
-  const theme = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
 
   if (direction === "het") {
     return <FAIcon name="venus-mars" color={color} size={size} />;
@@ -40,4 +36,3 @@ export default function Direction({ direction, color, size }: DirectionProps) {
   return <FAIcon name="xmark" color={color} size={size} />
 }
 
-const createStyles = (theme: ExtendedTheme) => StyleSheet.create({});

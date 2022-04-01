@@ -7,12 +7,6 @@ import {
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
 import {
-  Montserrat_100Thin,
-  Montserrat_100Thin_Italic,
-  Montserrat_200ExtraLight,
-  Montserrat_200ExtraLight_Italic,
-  Montserrat_300Light,
-  Montserrat_300Light_Italic,
   Montserrat_400Regular,
   Montserrat_400Regular_Italic,
   Montserrat_500Medium,
@@ -21,10 +15,6 @@ import {
   Montserrat_600SemiBold_Italic,
   Montserrat_700Bold,
   Montserrat_700Bold_Italic,
-  Montserrat_800ExtraBold,
-  Montserrat_800ExtraBold_Italic,
-  Montserrat_900Black,
-  Montserrat_900Black_Italic,
 } from "@expo-google-fonts/montserrat";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -33,6 +23,7 @@ import { colors } from "./utils/colors";
 import TabBarButton from "./components/TabBarButton";
 import Popular from "./screens/Popular";
 import Fanfic from "./screens/Fanfic";
+import Fandom from "./screens/Fandom";
 
 const CustomLightTheme: ExtendedTheme = {
   ...DefaultTheme,
@@ -88,18 +79,12 @@ const Main = () => (
     initialRouteName="home"
   >
     <Tab.Screen name="home" component={Home} />
-    <Tab.Screen name="popular" component={Popular} />
+    {/* <Tab.Screen name="popular" component={Popular} /> */}
   </Tab.Navigator>
 );
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Montserrat_100Thin,
-    Montserrat_100Thin_Italic,
-    Montserrat_200ExtraLight,
-    Montserrat_200ExtraLight_Italic,
-    Montserrat_300Light,
-    Montserrat_300Light_Italic,
     Montserrat_400Regular,
     Montserrat_400Regular_Italic,
     Montserrat_500Medium,
@@ -108,10 +93,6 @@ export default function App() {
     Montserrat_600SemiBold_Italic,
     Montserrat_700Bold,
     Montserrat_700Bold_Italic,
-    Montserrat_800ExtraBold,
-    Montserrat_800ExtraBold_Italic,
-    Montserrat_900Black,
-    Montserrat_900Black_Italic,
   });
 
   const scheme = Appearance.getColorScheme();
@@ -130,6 +111,7 @@ export default function App() {
         >
           <Tab.Screen name="main" component={Main} />
           <Tab.Screen name="fanfic" component={Fanfic} />
+          <Tab.Screen name="fandom" component={Fandom} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

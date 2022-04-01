@@ -18,13 +18,16 @@ export default function HowTo({ title, items }: HowToProps) {
         {title}
       </CustomText>
       {items.map((text, id) => (
-        <CustomText
-          ml={4}
-          mb={id === items.length - 1 ? 0 : 4}
+        <Text
+          style={{
+            marginLeft: 4,
+            marginBottom: id === items.length - 1 ? 0 : 4,
+          }}
           key={`howto_${id}`}
         >
-          &bull; {text}
-        </CustomText>
+          <CustomText>&bull;</CustomText>{" "}
+          <CustomText size={14}>{text}</CustomText>
+        </Text>
       ))}
     </View>
   );

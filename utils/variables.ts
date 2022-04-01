@@ -1,14 +1,3 @@
-export interface Direction {
-  femslash: string;
-  het: string;
-  gen: string;
-  slash: string;
-  mixed: string;
-  other: string;
-  article: string;
-  all?: string;
-}
-
 export type DirectionList =
   | "het"
   | "gen"
@@ -16,25 +5,10 @@ export type DirectionList =
   | "slash"
   | "mixed"
   | "other"
-  | "article"
-  | "all";
+  | "article";
 
 export type RatingList = "G" | "PG-13" | "R" | "NC-17" | "NC-21";
 export type StatusList = "finished" | "in-progress" | "frozen";
-
-export interface RatingType {
-  G: string;
-  "PG-13": string;
-  R: string;
-  "NC-17": string;
-  "NC-21": string;
-}
-
-export interface StatusType {
-  finished: string;
-  "in-progress": string;
-  frozen: string;
-}
 
 export const sex = {
   femslash: "gender-female",
@@ -44,15 +18,22 @@ export const sex = {
   mixed: "random",
   other: "circle-notch",
   article: "circle-notch",
-} as Direction;
+};
 
 export const directions = [
-  "all",
-  "gen",
-  "het",
-  "slash",
-  "femslash",
-  "mixed",
-  "other",
-  "article",
-] as DirectionList[];
+  { key: "gen", value: "Джен" },
+  { key: "het", value: "Гет" },
+  { key: "slash", value: "Слэш" },
+  { key: "femslash", value: "Фемслэш" },
+  { key: "mixed", value: "Смешанная" },
+  { key: "other", value: "Другие виды отношений" },
+  { key: "article", value: "Статья" },
+];
+
+export const ratings = [
+  { key: "G", value: "G" },
+  { key: "PG-13", value: "PG-13" },
+  { key: "R", value: "R" },
+  { key: "NC-17", value: "NC-17" },
+  { key: "NC-21", value: "NC-21" },
+];

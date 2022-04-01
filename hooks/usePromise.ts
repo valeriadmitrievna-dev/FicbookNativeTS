@@ -1,9 +1,9 @@
 import React from "react";
 
 export const usePromise = <T = unknown>(
-  promiseOrFunction: Promise<any> | Function,
+  promiseOrFunction: Promise<any> | Function | undefined,
   defaultValue?: any,
-  deps?: any,
+  deps?: any
 ) => {
   type HookState = {
     value: T;
@@ -17,20 +17,32 @@ export const usePromise = <T = unknown>(
   });
 
   React.useEffect(() => {
-    const promise =
-      typeof promiseOrFunction === "function"
-        ? promiseOrFunction()
-        : promiseOrFunction;
     let isSubscribed = true;
-    promise
-      .then((value: any) =>
-        isSubscribed ? setState({ value, error: null, isPending: false }) : null
-      )
-      .catch((error: any) =>
-        isSubscribed
-          ? setState({ value: defaultValue, error: error, isPending: false })
-          : null
-      );
+
+    if (isSubscribed && !state.isPending) {
+      setState(prev => ({
+        ...prev,
+        isPending: true,
+      }));
+    }
+
+    if (!!promiseOrFunction) {
+      const promise =
+        typeof promiseOrFunction === "function"
+          ? promiseOrFunction()
+          : promiseOrFunction;
+      promise
+        .then((value: any) =>
+          isSubscribed
+            ? setState({ value, error: null, isPending: false })
+            : null
+        )
+        .catch((error: any) =>
+          isSubscribed
+            ? setState({ value: defaultValue, error: error, isPending: false })
+            : null
+        );
+    }
 
     return () => {
       isSubscribed = false;

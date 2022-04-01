@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { ReactElement, useEffect, useMemo, useRef } from "react";
 import {
   ScrollView,
   Pressable,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   View,
   Dimensions,
+  NativeModules,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import Animated, {
@@ -22,6 +23,8 @@ interface PageContainerProps {
   backgroundColor?: string;
   fullHeight?: boolean;
   scrollTo?: ScrollToObject;
+  scrollBottom?: boolean;
+  refreshControl?: ReactElement;
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({
@@ -29,6 +32,8 @@ const PageContainer: React.FC<PageContainerProps> = ({
   children,
   fullHeight,
   scrollTo,
+  scrollBottom,
+  refreshControl
   // sticky = [],
 }) => {
   const theme = useTheme();
@@ -73,26 +78,33 @@ const PageContainer: React.FC<PageContainerProps> = ({
     }
   }, [scrollTo]);
 
+  useEffect(() => {
+    if (scrollBottom) {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }
+  }, [scrollBottom]);
+
   return (
     <View>
       <AnimatedTouchable style={[styles.button, style]} onPress={onPressTouch}>
         <Icon name="arrow-up" size={20} />
       </AnimatedTouchable>
       <ScrollView
-        // refreshControl={scrollable && refreshControl}
-        // refreshControl={false}
+        refreshControl={refreshControl}
         style={[
           styles.container,
           {
             backgroundColor: backgroundColor || theme.colors.background,
             minHeight: fullHeight
-              ? Dimensions.get("window").height
-              : Dimensions.get("window").height - 160,
+              ? Dimensions.get("window").height -
+                NativeModules.StatusBarManager.HEIGHT
+              : Dimensions.get("window").height -
+                NativeModules.StatusBarManager.HEIGHT -
+                60,
           },
         ]}
         ref={scrollRef}
         onScroll={handleScroll}
-        // scrollEnabled={scrollable}
         // stickyHeaderIndices={sticky}
         contentContainerStyle={{ flexGrow: 1 }}
       >

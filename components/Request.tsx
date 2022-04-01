@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
 import { IFandom, IRequest } from "../interfaces";
 import Tags from "./Tags";
+import TextArray from "./TextArray";
 
 interface RequestProps {
   request: IRequest;
@@ -16,10 +17,8 @@ export default function Request({ request, navigation }: RequestProps) {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const pressFandom = (f: IFandom) => {
-    navigation.navigate("fandom", {
-      group: f.group,
-      slug: f.slug,
-      title: f.title,
+    navigation.push("fandom", {
+      fandom: f,
     });
   };
   return (
@@ -32,49 +31,32 @@ export default function Request({ request, navigation }: RequestProps) {
       <View style={styles.header}>
         <View style={styles.headerIcon}>
           <Icon name="thumbs-up" size={14} color={theme.colors.text} />
-          <CustomText> {request.likes}</CustomText>
+          <CustomText ml={4}>{request.likes}</CustomText>
         </View>
         <View style={styles.headerIcon}>
           <Icon name="star" size={14} color={theme.colors.text} />
-          <CustomText> {request.bookmarks}</CustomText>
+          <CustomText ml={4}>{request.bookmarks}</CustomText>
         </View>
         <View style={styles.headerIcon}>
           <Icon name="book" size={14} color={theme.colors.text} />
-          <CustomText> {request.works}</CustomText>
+          <CustomText ml={4}>{request.works}</CustomText>
         </View>
       </View>
-      <CustomText
-        weight="500Medium"
-        size={17}
-        mb={5}
-        underlined
-      >
+      <CustomText weight="500Medium" size={17} mb={5} underlined>
         {request.title}
       </CustomText>
       <Text style={{ marginBottom: 5 }}>
         <Icon name="book" size={14} color={theme.colors.text} />
-        {request.fandoms.map((f, id) => (
-          <Text key={id} style={{ color: theme.colors.text }}>
-            {" "}
-            <CustomText
-              ml={5}
-              underlined
-              onPress={() => pressFandom(f)}
-            >
-              {f.title}
-            </CustomText>
-            {request.fandoms.length - 1 !== id ? ", " : ""}
-          </Text>
-        ))}
+        <TextArray
+          array={request.fandoms}
+          title={"title"}
+          onPress={pressFandom}
+          underlined
+        />
       </Text>
       <Text style={{ marginBottom: 6 }}>
         <CustomText underlined>Рейтинг:</CustomText>{" "}
-        {request.ratings.map((r, id) => (
-          <CustomText key={`${request.id}_${id}`}>
-            {r}
-            {id !== request.ratings.length - 1 && ", "}
-          </CustomText>
-        ))}
+        <TextArray array={request.ratings} title="" />
       </Text>
       {!!request.tags?.length && <Tags tags={request.tags} />}
       <View style={styles.line} />
@@ -107,7 +89,7 @@ const createStyles = (theme: ExtendedTheme) =>
     headerIcon: {
       flexDirection: "row",
       alignItems: "center",
-      marginRight: 10,
+      marginRight: 14,
     },
     hot: {
       position: "absolute",

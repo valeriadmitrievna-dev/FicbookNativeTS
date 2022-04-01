@@ -6,4 +6,7 @@ import { LogBox } from "react-native";
 
 export default registerRootComponent(() => <App />);
 
-LogBox.ignoreLogs(["Warning: ..."]);
+LogBox.ignoreLogs([
+  'Warning: Each child in a list should have a unique "key" prop.',
+  "Warning: Encountered two children with the same key",
+]);

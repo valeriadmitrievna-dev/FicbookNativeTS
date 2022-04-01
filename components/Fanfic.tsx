@@ -6,6 +6,8 @@ import CustomText from "./CustomText";
 import { colors } from "../utils/colors";
 import Icon from "react-native-vector-icons/Ionicons";
 import Tag from "./Tag";
+import Tags from "./Tags";
+import TextArray from "./TextArray";
 
 interface FanficProps {
   fanfic: IFanfic;
@@ -30,7 +32,9 @@ export default function Fanfic({
     });
   };
   const pressFandom = (f: IFandom) => {
-    console.log(f.title);
+    navigation.push("fandom", {
+      fandom: f,
+    });
   };
 
   return (
@@ -129,8 +133,8 @@ export default function Fanfic({
               size={13}
               weight="500Medium"
               color={theme.colors.primary}
+              ml={4}
             >
-              {" "}
               {fanfic.likes.title}
             </CustomText>
           </View>
@@ -148,8 +152,8 @@ export default function Fanfic({
                 size={13}
                 weight="500Medium"
                 color={theme.colors.primary}
+                ml={4}
               >
-                {" "}
                 {fanfic.rewards.value}
               </CustomText>
             </View>
@@ -186,35 +190,24 @@ export default function Fanfic({
           </CustomText>
           <Text style={{ marginBottom: 4 }}>
             <CustomText weight="500Medium">Авторы:</CustomText>{" "}
-            {fanfic.authors.map((a, id) => (
-              <CustomText key={`author_${fanfic.id}_${a.id}`}>
-                <CustomText onPress={() => pressAuthor(a)} underlined>
-                  {a.name}
-                </CustomText>
-                {id !== fanfic.authors.length - 1 && ", "}
-              </CustomText>
-            ))}
+            <TextArray
+              array={fanfic.authors}
+              title="name"
+              onPress={pressAuthor}
+            />
           </Text>
           <Text style={{ marginBottom: 4 }}>
             <CustomText weight="500Medium">Фэндом:</CustomText>{" "}
-            {fanfic.fandoms.map((f, id) => (
-              <CustomText key={`fandom_${fanfic.id}_${f.slug}`}>
-                <CustomText onPress={() => pressFandom(f)} underlined>
-                  {f.title}
-                </CustomText>
-                {id !== fanfic.fandoms.length - 1 && ", "}
-              </CustomText>
-            ))}
+            <TextArray
+              array={fanfic.fandoms}
+              title="title"
+              onPress={pressFandom}
+            />
           </Text>
           {!!fanfic.pairings?.length && (
             <Text style={{ marginBottom: 4 }}>
               <CustomText weight="500Medium">Пэйринг и персонажи:</CustomText>{" "}
-              {fanfic.pairings?.map((p, id) => (
-                <CustomText key={`${fanfic.id}_fandom_${p.id}`}>
-                  {p.title}
-                  {id !== (fanfic.pairings?.length || 0) - 1 && ", "}
-                </CustomText>
-              ))}
+              <TextArray array={fanfic.pairings} title="title" />
             </Text>
           )}
           <Text style={{ marginBottom: 4 }}>
@@ -227,11 +220,7 @@ export default function Fanfic({
               <CustomText>{fanfic.date.text}</CustomText>
             </Text>
           )}
-          <View style={styles.tags}>
-            {fanfic.tags?.map(tag => (
-              <Tag tag={tag} key={`${fanfic.id}_${tag.id}`} />
-            ))}
-          </View>
+          {!!fanfic.tags?.length && <Tags tags={fanfic.tags} />}
           <View style={styles.line} />
           <CustomText>{fanfic.description}</CustomText>
         </View>
@@ -271,10 +260,6 @@ const createStyles = (theme: ExtendedTheme) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-    },
-    tags: {
-      flexDirection: "row",
-      flexWrap: "wrap",
     },
     line: {
       height: 2,

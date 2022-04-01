@@ -1,5 +1,25 @@
 import { DirectionList, RatingList, StatusList } from "./utils/variables";
 
+export interface TextProps {
+  size?: number;
+  line?: number;
+  color?: ColorValue;
+  weight?: string;
+  ml?: number;
+  mr?: number;
+  mb?: number;
+  mt?: number;
+  center?: boolean;
+  capitalize?: boolean;
+  underlined?: boolean;
+  onPress?: (el: any) => void;
+  italic?: boolean;
+  width?: string | number;
+  numberOfLines?: number;
+  style?: TextStyle;
+  children: string | number;
+}
+
 export interface IPromo {
   cover?: string;
   direction: DirectionList;
@@ -26,6 +46,8 @@ export interface IFandom {
   title: string;
   group: string;
   slug: string;
+  id?: string;
+  subtitle?: string;
 }
 
 export interface ITag {

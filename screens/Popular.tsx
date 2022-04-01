@@ -1,5 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import React, { useCallback, useState } from "react";
 import PageContainer from "../components/PageContainer";
 import CustomText from "../components/CustomText";
 import HowTo from "../components/HowTo";
@@ -9,39 +9,24 @@ import SmallLoader from "../components/SmallLoader";
 import Fanfic from "../components/Fanfic";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { directions, sex, DirectionList } from "../utils/variables";
-import { colors } from "../utils/colors";;
+import { colors } from "../utils/colors";
 import Direction from "../components/Direction";
+import { usePromise } from "../hooks/usePromise";
 
 export default function Popular() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const [loaded, setLoaded] = useState<boolean>(false);
-  const [fanfics, setFanfics] = useState<IFanfic[]>([]);
-  const [ratings, setRatings] = useState<IRatingNumber[]>([]);
-  const [direction, setDirection] = useState<DirectionList>("all");
+  const [direction, setDirection] = useState<DirectionList | "">("");
 
-  const getPopular = async (d: DirectionList | "") => {
-    setLoaded(false);
-    try {
-      const { data } = await API.get("/popular/" + d);
-      setFanfics(data.works);
-      setRatings(data.ratings);
-    } catch (error: any) {
-      console.log(error.message);
-    }
-    setLoaded(true);
-  };
+  const getPopular = API.get("/popular/" + direction).then(d => d.data);
+  const [{ fanfics, ratings }, error, pending] = usePromise(getPopular, {}, [
+    direction,
+  ]);
 
-  const getDirection = (d: DirectionList) => {
+  const getDirection = useCallback((d: DirectionList) => {
     if (d !== direction) {
-      setDirection(d);
-      const _d = !!sex[d] ? d : "";
-      getPopular(_d);
+      setDirection(!!sex[d] ? d : "");
     }
-  };
-
-  useEffect(() => {
-    getPopular("");
   }, []);
 
   return (
@@ -59,7 +44,7 @@ export default function Popular() {
         ]}
       />
 
-      {loaded && !!fanfics.length && !!ratings.length ? (
+      {!pending ? (
         <>
           <View style={styles.directions}>
             {directions.map(d => (
@@ -83,7 +68,7 @@ export default function Popular() {
               </Pressable>
             ))}
           </View>
-          {fanfics.map((fic, id) => (
+          {fanfics.map((fic: IFanfic, id: number) => (
             <Fanfic
               fanfic={fic}
               rating_number={ratings[id]}

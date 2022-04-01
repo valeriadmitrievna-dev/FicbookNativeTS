@@ -1,58 +1,57 @@
-import { StyleSheet, Pressable, View } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import { StyleSheet, Pressable, View, Text } from "react-native";
+import React, { useMemo, useState } from "react";
 import CustomText from "./CustomText";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
-import { ITag, ITagInfo } from "../interfaces";
+import { ITag } from "../interfaces";
 import { hexToRgb } from "../utils/functions";
 import CustomModal from "./CustomModal";
 import API from "../api";
+import { usePromise } from "../hooks/usePromise";
+import SmallLoader from "./SmallLoader";
 
 interface TagProps {
   tag: ITag;
 }
 
-export default function Tag({ tag }: TagProps) {
+const Tag = ({ tag }: TagProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [isTagAvailable, setTagAvailable] = useState<boolean>(false);
-  const [tagInfo, setTagInfo] = useState<ITagInfo>();
+
+  const getTagInfo = API.get("/tag/" + tag.id).then(d => d.data);
+  const [{ tag: tagInfo }, error, pending] = usePromise(getTagInfo, {}, []);
 
   const openModal = () => {
-    if (isTagAvailable) {
-      setModalVisible(true);
-    }
+    setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
   };
 
-  const getTagInfo = async () => {
-    try {
-      const { data } = await API.get("/tag/" + tag.id);
-      setTagInfo(data.tag);
-      setTagAvailable(true);
-    } catch (error: any) {
-      console.log(error.message);
-    }
-  };
-
-  useEffect(() => {
-    getTagInfo();
-  }, []);
-
   return (
     <View>
       <CustomModal visible={modalVisible} title={tag.title} close={closeModal}>
-        <CustomText mb={8}>{tagInfo?.description}</CustomText>
-        {!!tagInfo?.synonyms && (
-          <CustomText size={14} italic>
-            Синонимы: {tagInfo?.synonyms}
-          </CustomText>
+        {pending ? (
+          <SmallLoader />
+        ) : (
+          <>
+            <CustomText mb={8}>{tagInfo?.description}</CustomText>
+            {!!tagInfo?.synonyms && (
+              <Text>
+                <CustomText size={14} italic>
+                  Синонимы:
+                </CustomText>{" "}
+                <CustomText size={14} italic>
+                  {tagInfo?.synonyms}
+                </CustomText>
+              </Text>
+            )}
+          </>
         )}
       </CustomModal>
       <Pressable
+        onPress={openModal}
         style={[
           styles.tag,
           {
@@ -61,16 +60,16 @@ export default function Tag({ tag }: TagProps) {
               : `rgba(${hexToRgb(theme.colors.card)}, 0.75)`,
           },
         ]}
-        onPress={openModal}
       >
         <CustomText size={13} weight={tag.adult ? "600SemiBold" : "500Medium"}>
-          {tag.title}
-          {tag.adult ? " 18+" : ""}
+          {`${tag.title} ${tag.adult ? " 18+" : ""}`}
         </CustomText>
       </Pressable>
     </View>
   );
-}
+};
+
+export default React.memo(Tag);
 
 const createStyles = (theme: ExtendedTheme) =>
   StyleSheet.create({
@@ -81,5 +80,6 @@ const createStyles = (theme: ExtendedTheme) =>
       paddingVertical: 3,
       borderRadius: 4,
       paddingTop: 2,
+      position: "relative",
     },
   });

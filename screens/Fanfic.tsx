@@ -15,7 +15,15 @@ import PageContainer from "../components/PageContainer";
 import CustomText from "../components/CustomText";
 import BackButton from "../components/BackButton";
 import API from "../api";
-import { IFanfic, IFicContent, IPart, ScrollToObject } from "../interfaces";
+import {
+  IAuthor,
+  IFandom,
+  IFanfic,
+  IFicContent,
+  IPairing,
+  IPart,
+  ScrollToObject,
+} from "../interfaces";
 import ScreenLoader from "../components/ScreenLoader";
 import FicAuthor from "../components/FicAuthor";
 import Icon from "react-native-vector-icons/Feather";
@@ -25,69 +33,49 @@ import Tags from "../components/Tags";
 import { colors } from "../utils/colors";
 import { hexToRgb } from "../utils/functions";
 import SmallLoader from "../components/SmallLoader";
+import { usePromise } from "../hooks/usePromise";
+import { DirectionList, RatingList, StatusList } from "../utils/variables";
+import TextArray from "../components/TextArray";
 
 interface FanficProps {
   route: any;
 }
 
-export default function Fanfic({ route }: FanficProps) {
+function Fanfic({ route }: FanficProps) {
   const navigation = useNavigation<any>();
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const id: string = route?.params?.id;
+  const part: string | undefined = route?.params?.part;
 
-  const [loaded, setLoaded] = useState<boolean>(false);
-  const [fanfic, setFanfic] = useState<IFanfic>();
-  const [parts, setParts] = useState<IPart[]>([]);
-  const [content, setContent] = useState<IFicContent | undefined>();
-  const [contentLoaded, setContentLoaded] = useState<boolean>(true);
+  const [activePart, setActivePart] = useState<string | undefined>(part);
   const [scrollTo, setScrollTo] = useState<ScrollToObject>();
 
-  const getFanfic = async () => {
-    try {
-      const { data } = await API.get("/readfic/" + id);
-      setFanfic(data.work);
-      setParts(data.parts);
-      setLoaded(true);
-    } catch (error: any) {
-      setLoaded(true);
-      if (navigation.canGoBack()) {
-        navigation.goBack();
-      } else {
-        navigation.navigate("main");
-      }
-    }
-  };
-
-  const getPartContent = async (part?: string) => {
-    setContent(undefined);
-    if (!!part) {
-      setContentLoaded(false);
-      try {
-        const { data } = await API.get(`/readfic/${id}/${part}`);
-        setFanfic(data.work);
-        setContent(data.content);
-        setContentLoaded(true);
-      } catch (error: any) {
-        setContentLoaded(true);
-        if (navigation.canGoBack()) {
-          navigation.goBack();
-        } else {
-          navigation.navigate("main");
-        }
-      }
-    }
-  };
+  const getFanfic = API.get(`/readfic/${id}/${activePart || ""}`).then(
+    d => d.data
+  );
+  const [{ fanfic, parts, content }, error, pending] = usePromise(
+    getFanfic,
+    {
+      fanfic: undefined,
+      parts: [],
+    },
+    [activePart]
+  );
 
   const getLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     setScrollTo({
       y: nativeEvent.layout.y,
-      loaded: contentLoaded,
+      loaded: !pending,
     });
   };
 
   const toMenu = () => {
-    setContent(undefined);
+    setActivePart(undefined);
+  };
+
+  const getFandom = (fandom: IFandom) => {
+    navigation.push("fandom", { fandom });
   };
 
   useEffect(() => {
@@ -100,20 +88,22 @@ export default function Fanfic({ route }: FanficProps) {
     }
   }, []);
 
-  useEffect(() => {
-    if (!!id) {
-      getFanfic();
-    }
-  }, [id]);
+  if (!!error) {
+    console.log(error);
+  }
 
   return (
-    <PageContainer fullHeight scrollTo={scrollTo}>
-      {loaded && !!fanfic ? (
-        <>
+    <PageContainer
+      fullHeight
+      scrollTo={scrollTo}
+      scrollBottom={!!fanfic && pending}
+    >
+      {!!fanfic ? (
+        <View>
           <View>
             <View style={styles.header}>
               <View style={styles.authors}>
-                {fanfic.authors.map(a => (
+                {fanfic.authors.map((a: IAuthor) => (
                   <FicAuthor author={a} key={`author_${a.id}`} />
                 ))}
               </View>
@@ -125,7 +115,8 @@ export default function Fanfic({ route }: FanficProps) {
                   styles.badge,
                   {
                     borderBottomLeftRadius: 0,
-                    backgroundColor: colors.direction[fanfic.direction.value],
+                    backgroundColor:
+                      colors.direction[fanfic.direction.value as DirectionList],
                   },
                 ]}
               >
@@ -154,7 +145,8 @@ export default function Fanfic({ route }: FanficProps) {
                 style={[
                   styles.badge,
                   {
-                    backgroundColor: colors.rating[fanfic.rating.value],
+                    backgroundColor:
+                      colors.rating[fanfic.rating.value as RatingList],
                   },
                 ]}
               >
@@ -170,14 +162,15 @@ export default function Fanfic({ route }: FanficProps) {
                 style={[
                   styles.badge,
                   {
-                    backgroundColor: colors.status[fanfic.status.value],
+                    backgroundColor:
+                      colors.status[fanfic.status.value as StatusList],
                   },
                 ]}
               >
                 <CustomText
                   size={13}
                   weight="500Medium"
-                  color={colors.statusesText[fanfic.status.value]}
+                  color={colors.statusesText[fanfic.status.value as StatusList]}
                 >
                   {fanfic.status.title}
                 </CustomText>
@@ -195,8 +188,8 @@ export default function Fanfic({ route }: FanficProps) {
                   size={13}
                   weight="500Medium"
                   color={theme.colors.primary}
+                  ml={4}
                 >
-                  {" "}
                   {fanfic.likes.title}
                 </CustomText>
               </View>
@@ -218,8 +211,8 @@ export default function Fanfic({ route }: FanficProps) {
                     size={13}
                     weight="500Medium"
                     color={theme.colors.primary}
+                    ml={4}
                   >
-                    {" "}
                     {fanfic.rewards.value}
                   </CustomText>
                 </View>
@@ -228,10 +221,13 @@ export default function Fanfic({ route }: FanficProps) {
             <CustomText weight="600SemiBold" size={22} mb={6}>
               {fanfic.title}
             </CustomText>
-            {fanfic.fandoms.map(f => (
-              <Text key={f.slug} style={{ marginBottom: 4 }}>
+            {fanfic.fandoms.map((f: IFandom) => (
+              <Text
+                key={`fandom_${f.group}_${f.slug}`}
+                style={{ marginBottom: 4 }}
+              >
                 <Icon name="book" size={16} />{" "}
-                <CustomText underlined>
+                <CustomText underlined onPress={() => getFandom(f)}>
                   {f.title}
                 </CustomText>
               </Text>
@@ -239,22 +235,13 @@ export default function Fanfic({ route }: FanficProps) {
             {!!fanfic.away && (
               <Text style={{ marginTop: 14 }}>
                 <CustomText weight="500Medium">Оригинал: </CustomText>
-                <CustomLink url={fanfic.away} />
+                <CustomLink>{fanfic.away}</CustomLink>
               </Text>
             )}
             {!!fanfic.pairings?.length && (
               <Text style={{ marginTop: 18 }}>
-                <CustomText weight="500Medium">
-                  Пэйринг и персонажи:{" "}
-                </CustomText>
-                <CustomText>
-                  {fanfic.pairings.map((p, id) => (
-                    <>
-                      <CustomText key={id}>{p.title}</CustomText>
-                      {id !== (fanfic.pairings?.length || 0) - 1 && ", "}
-                    </>
-                  ))}
-                </CustomText>
+                <CustomText weight="500Medium">Пэйринг и персонажи:</CustomText>{" "}
+                <TextArray array={fanfic.pairings} title="title" />
               </Text>
             )}
             <Text style={{ marginTop: 6 }}>
@@ -287,22 +274,21 @@ export default function Fanfic({ route }: FanficProps) {
                 <CustomText weight="500Medium" mt={14} mb={4}>
                   Работа написана по заявке:
                 </CustomText>{" "}
-                <CustomText underlined>
-                  {fanfic.request.title}
-                </CustomText>
+                <CustomText underlined>{fanfic.request.title}</CustomText>
               </Text>
             )}
           </View>
-          {!!parts.length && !content && contentLoaded && (
+          {pending && <SmallLoader style={styles.loader} />}
+          {!pending && !activePart && !!parts?.length && (
             <View style={styles.parts}>
               <CustomText mb={14} center size={18} weight="600SemiBold">
                 Содержание
               </CustomText>
-              {parts.map(p => (
+              {parts.map((p: IPart) => (
                 <TouchableOpacity
                   key={`${fanfic.id}_part_${p.id}`}
                   style={styles.part}
-                  onPress={() => getPartContent(p.id)}
+                  onPress={() => setActivePart(p.id)}
                 >
                   <CustomText
                     weight="500Medium"
@@ -318,65 +304,67 @@ export default function Fanfic({ route }: FanficProps) {
               ))}
             </View>
           )}
-          {!contentLoaded && !content ? (
-            <SmallLoader style={styles.loader} />
-          ) : (
-            !!content && (
-              <View onLayout={getLayout}>
+          {!pending && !!content?.content && (
+            <View onLayout={getLayout}>
+              {!!content.navigation && (
                 <View style={[styles.navigation, { marginTop: 32 }]}>
                   {!!content.navigation.prev && (
                     <TouchableOpacity
                       style={[styles.navbutton, { marginRight: 6 }]}
-                      onPress={() => getPartContent(content.navigation.prev)}
+                      onPress={() => setActivePart(content.navigation.prev)}
                     >
                       <Icon name="chevron-left" size={24} />
                       <CustomText weight="500Medium">Назад</CustomText>
                     </TouchableOpacity>
                   )}
-                  <TouchableOpacity
-                    style={[styles.navbutton, { flexGrow: 0 }]}
-                    onPress={toMenu}
-                  >
-                    <Icon name="list" size={24} />
-                  </TouchableOpacity>
+                  {!!content.navigation.main && (
+                    <TouchableOpacity
+                      style={[styles.navbutton, { flexGrow: 0 }]}
+                      onPress={toMenu}
+                    >
+                      <Icon name="list" size={24} />
+                    </TouchableOpacity>
+                  )}
                   {!!content.navigation.next && (
                     <TouchableOpacity
                       style={[
                         styles.navbutton,
                         { marginLeft: 6, justifyContent: "flex-end" },
                       ]}
-                      onPress={() => getPartContent(content.navigation.next)}
+                      onPress={() => setActivePart(content.navigation.next)}
                     >
                       <CustomText weight="500Medium">Вперед</CustomText>
                       <Icon name="chevron-right" size={24} />
                     </TouchableOpacity>
                   )}
                 </View>
-                <View style={styles.content}>
-                  <CustomText mb={4} center size={18} weight="600SemiBold">
-                    {content.title}
-                  </CustomText>
-                  <CustomText mb={14} center>
-                    {content.info}
-                  </CustomText>
-                  {!!content.comment_top && (
-                    <>
-                      <CustomText mb={14}>{content.comment_top}</CustomText>
-                      <View style={[styles.line]} />
-                    </>
-                  )}
-                  <CustomText mt={24} mb={24}>
-                    {content.content}
-                  </CustomText>
-                  {!!content.comment_bottom && (
-                    <>
-                      <View style={[styles.line]} />
-                      <CustomText mb={14} mt={14}>
-                        {content.comment_bottom}
-                      </CustomText>
-                    </>
-                  )}
-                </View>
+              )}
+              <View style={styles.content}>
+                <CustomText mb={4} center size={18} weight="600SemiBold">
+                  {content.title}
+                </CustomText>
+                <CustomText mb={14} center>
+                  {content.info}
+                </CustomText>
+                {!!content.comment_top && (
+                  <>
+                    <CustomText mb={14}>{content.comment_top}</CustomText>
+                    <View style={[styles.line]} />
+                  </>
+                )}
+                <CustomText mt={24} mb={24}>
+                  {content.content}
+                </CustomText>
+                {!!content.comment_bottom && (
+                  <>
+                    <View style={[styles.line]} />
+                    <CustomText mb={14} mt={14}>
+                      {content.comment_bottom}
+                    </CustomText>
+                  </>
+                )}
+              </View>
+              {!!content.navigation && (
                 <View
                   style={[
                     styles.navigation,
@@ -386,41 +374,45 @@ export default function Fanfic({ route }: FanficProps) {
                   {!!content.navigation.prev && (
                     <TouchableOpacity
                       style={[styles.navbutton, { marginRight: 6 }]}
-                      onPress={() => getPartContent(content.navigation.prev)}
+                      onPress={() => setActivePart(content.navigation.prev)}
                     >
                       <Icon name="chevron-left" size={24} />
                       <CustomText weight="500Medium">Назад</CustomText>
                     </TouchableOpacity>
                   )}
-                  <TouchableOpacity
-                    style={[styles.navbutton, { flexGrow: 0 }]}
-                    onPress={toMenu}
-                  >
-                    <Icon name="list" size={24} />
-                  </TouchableOpacity>
+                  {!!content.navigation.main && (
+                    <TouchableOpacity
+                      style={[styles.navbutton, { flexGrow: 0 }]}
+                      onPress={toMenu}
+                    >
+                      <Icon name="list" size={24} />
+                    </TouchableOpacity>
+                  )}
                   {!!content.navigation.next && (
                     <TouchableOpacity
                       style={[
                         styles.navbutton,
                         { marginLeft: 6, justifyContent: "flex-end" },
                       ]}
-                      onPress={() => getPartContent(content.navigation.next)}
+                      onPress={() => setActivePart(content.navigation.next)}
                     >
                       <CustomText weight="500Medium">Вперед</CustomText>
                       <Icon name="chevron-right" size={24} />
                     </TouchableOpacity>
                   )}
                 </View>
-              </View>
-            )
+              )}
+            </View>
           )}
-        </>
+        </View>
       ) : (
         <ScreenLoader />
       )}
     </PageContainer>
   );
 }
+
+export default React.memo(Fanfic);
 
 const createStyles = (theme: ExtendedTheme) =>
   StyleSheet.create({
@@ -440,6 +432,8 @@ const createStyles = (theme: ExtendedTheme) =>
     badges: {
       flexDirection: "row",
       alignItems: "stretch",
+      flexWrap: "wrap",
+      marginBottom: 10,
     },
     badge: {
       paddingHorizontal: 6,
@@ -450,7 +444,7 @@ const createStyles = (theme: ExtendedTheme) =>
       marginRight: 4,
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 14,
+      marginBottom: 4,
     },
     parts: {
       marginTop: 22,

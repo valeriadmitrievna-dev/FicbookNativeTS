@@ -1,14 +1,15 @@
 import { Alert, Linking } from "react-native";
 import React, { useCallback } from "react";
-import CustomText, { TextProps } from "./CustomText";
+import CustomText from "./CustomText";
 import { colors } from "../utils/colors";
+import { TextProps } from "../interfaces";
 
 interface LinkProps extends TextProps {
-  url: string;
+  children: string;
 }
 
 const CustomLink = ({
-  url,
+  children,
   size,
   line,
   weight,
@@ -22,14 +23,15 @@ const CustomLink = ({
   width,
   numberOfLines,
 }: LinkProps) => {
+
   const handlePress = useCallback(async () => {
-    const supported = await Linking.canOpenURL(url);
+    const supported = await Linking.canOpenURL(children);
     if (supported) {
-      await Linking.openURL(url);
+      await Linking.openURL(children);
     } else {
-      Alert.alert(`Don't know how to open this URL: ${url}`);
+      Alert.alert(`Don't know how to open this URL: ${children}`);
     }
-  }, [url]);
+  }, [children]);
 
   return (
     <CustomText
@@ -49,7 +51,7 @@ const CustomLink = ({
       numberOfLines={numberOfLines}
       onPress={handlePress}
     >
-      {url}
+      {children}
     </CustomText>
   );
 };

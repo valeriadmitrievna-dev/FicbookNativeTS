@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import Animated, {
   Easing,
@@ -10,16 +10,15 @@ import CustomText from "./CustomText";
 import API from "../api";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
 import SmallLoader from "./SmallLoader";
-import { AxiosError } from "axios";
 import { hexToRgb } from "../utils/functions";
+import { IFandom } from "../interfaces";
+import { usePromise } from "../hooks/usePromise";
 
 export default function SearchFandom({ navigation }: { navigation: any }) {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [loaded, setLoaded] = useState(false);
-  const [results, setResults] = useState([]);
-  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
 
   const height = useSharedValue(0);
   const config = {
@@ -33,33 +32,10 @@ export default function SearchFandom({ navigation }: { navigation: any }) {
     };
   });
 
-  const handleType = async (t: string) => {
-    setSearch(t);
-    try {
-      setLoaded(false);
-      const response = await API.post("/search", {
-        query: t.replace(/\s\s+/g, " ").trim(),
-      });
-      setResults(response.data.data.result);
-    } catch (error) {
-      const err = error as AxiosError;
-      console.log(err.message);
-    }
-    setLoaded(true);
-  };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await API.get("/search/init");
-        setResults(response.data.data.result);
-      } catch (error) {
-        const err = error as AxiosError;
-        console.log(err.message);
-      }
-      setLoaded(true);
-    })();
-  }, []);
+  const getResults = API.post("/search", {
+    query: query.replace(/\s\s+/g, " ").trim(),
+  }).then(d => d.data);
+  const [{ results }, error, pending] = usePromise(getResults, [], [query]);
 
   return (
     <>
@@ -75,21 +51,18 @@ export default function SearchFandom({ navigation }: { navigation: any }) {
             height.value = 10000;
           }
         }}
-        onChangeText={handleType}
-        value={search}
+        onChangeText={setQuery}
+        value={query}
       />
       <Animated.View style={[styles.dropdown, style]}>
-        {loaded ? (
-          results.map((f: any, id: any) => (
+        {!pending && !!results?.length ? (
+          results.map((f: IFandom, id: number) => (
             <TouchableOpacity
               onPress={() => {
-                setSearch("");
+                setQuery("");
                 navigation.navigate("fandom", {
-                  group: f.group_crazy_title,
-                  slug: f.slug,
-                  title: f.title,
-                  sec_title: f.sec_title,
-                } as any);
+                  fandom: f,
+                });
                 height.value = 0;
               }}
               style={[
@@ -101,7 +74,7 @@ export default function SearchFandom({ navigation }: { navigation: any }) {
               key={f.id}
             >
               <CustomText weight="700Bold">{f.title.trim()}</CustomText>
-              <CustomText>{f.sec_title.trim()}</CustomText>
+              <CustomText>{f.subtitle}</CustomText>
             </TouchableOpacity>
           ))
         ) : (

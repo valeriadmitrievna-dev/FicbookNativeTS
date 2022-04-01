@@ -1,4 +1,11 @@
-import { StyleSheet, Dimensions, Modal, View, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  Modal,
+  View,
+  Pressable,
+  ViewStyle,
+} from "react-native";
 import React, { useMemo, useState } from "react";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
 import { hexToRgb } from "../utils/functions";
@@ -7,15 +14,19 @@ import CustomText from "./CustomText";
 
 interface CustomModalProps {
   visible: boolean;
-  title?: string;
   close: () => void;
+  title?: string;
+  header?: boolean;
+  contentStyle?: ViewStyle;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
   visible,
   children,
-  title,
   close,
+  title,
+  header = true,
+  contentStyle,
 }) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -36,15 +47,17 @@ const CustomModal: React.FC<CustomModalProps> = ({
   return (
     <Modal visible={visible} transparent={true}>
       <Pressable style={styles.container} onPress={check} onLayout={layout}>
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <CustomText weight="600SemiBold" width="70%">
-              {title}
-            </CustomText>
-            <Pressable onPress={close}>
-              <Icon name="close" size={18} />
-            </Pressable>
-          </View>
+        <View style={[styles.content, contentStyle]}>
+          {header && (
+            <View style={styles.header}>
+              <CustomText weight="600SemiBold" width="70%">
+                {title || ""}
+              </CustomText>
+              <Pressable onPress={close}>
+                <Icon name="close" size={18} />
+              </Pressable>
+            </View>
+          )}
           {children}
         </View>
       </Pressable>
@@ -76,7 +89,7 @@ const createStyles = (theme: ExtendedTheme) =>
       shadowRadius: 3,
       elevation: 5,
       maxWidth: Dimensions.get("window").width - 30,
-      minWidth: Dimensions.get("window").width * 0.6,
+      minWidth: Dimensions.get("window").width * 0.75,
     },
     header: {
       flexDirection: "row",

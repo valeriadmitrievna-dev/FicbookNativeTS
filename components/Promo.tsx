@@ -14,6 +14,7 @@ import { colors } from "../utils/colors";
 import { sex, DirectionList } from "../utils/variables";
 import { hexToRgb } from "../utils/functions";
 import Direction from "./Direction";
+import ImageBackgroundWithLoading from "./ImageBackgroundWithLoading";
 
 interface CoversObject {
   femslash: string;
@@ -52,16 +53,14 @@ export default function Promo({ promo, navigation }: PromoProps) {
         })
       }
     >
-      <ImageBackground
+      <ImageBackgroundWithLoading
         style={[
           styles.promo,
           {
             borderColor: colors.direction[promo.direction as DirectionList],
           },
         ]}
-        source={{
-          uri: promo.cover || covers[promo.direction as keyof CoversObject],
-        }}
+        uri={promo.cover || covers[promo.direction as keyof CoversObject]}
       >
         <View
           style={[
@@ -79,7 +78,7 @@ export default function Promo({ promo, navigation }: PromoProps) {
           />
         </View>
         <View style={styles.promo_footer}>
-          <CustomText color={theme.colors.primary} weight="600SemiBold">
+          <CustomText color={theme.colors.primary} mb={4} weight="600SemiBold">
             {promo.title}
           </CustomText>
           <CustomText
@@ -91,7 +90,7 @@ export default function Promo({ promo, navigation }: PromoProps) {
             {promo.fandom}
           </CustomText>
         </View>
-      </ImageBackground>
+      </ImageBackgroundWithLoading>
     </TouchableOpacity>
   );
 }
