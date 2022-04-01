@@ -1,4 +1,4 @@
-import { RefreshControl, StyleSheet, View } from "react-native";
+import { Pressable, RefreshControl, StyleSheet, View } from "react-native";
 import React, { useMemo } from "react";
 import PageContainer from "../components/PageContainer";
 import {
@@ -15,11 +15,13 @@ import Ionicon from "react-native-vector-icons/Ionicons";
 import Request from "../components/Request";
 import { usePromise } from "../hooks/usePromise";
 import SmallLoader from "../components/SmallLoader";
+import { IFandom, IFanfic } from "../interfaces";
+import Fanfic from "../components/Fanfic";
 
 function Home() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const [refreshControl, setRefreshControl] = React.useState<number>(0);
@@ -29,10 +31,16 @@ function Home() {
     setTimeout(() => setRefreshing(false), 400);
   };
 
+  const pressFandom = (fandom: IFandom) => {
+    navigation.push("fandom", { fandom });
+  };
+
   const getPromos = API.get("/").then(d => d.data);
-  const [{ promos, requests }, error, pending] = usePromise(getPromos, {}, [
-    refreshControl,
-  ]);
+  const [{ promos, requests, extras, fanfics }, error, pending] = usePromise(
+    getPromos,
+    {},
+    [refreshControl]
+  );
 
   return (
     <PageContainer
@@ -49,41 +57,75 @@ function Home() {
         Ficbook
       </CustomText>
       <SearchFandom navigation={navigation} />
-      <View style={[styles.sectionTitle, { marginTop: 16 }]}>
-        <Ionicon name="newspaper" size={18} color={theme.colors.text} />
-        <CustomText weight="600SemiBold" size={18} ml={6}>
-          Промо фанфиков
-        </CustomText>
-      </View>
       {pending ? (
-        <SmallLoader />
+        <SmallLoader style={{ flex: 1 }} />
       ) : (
-        <View style={styles.promos}>
-          {promos.map((promo: IPromo) => (
-            <Promo
-              key={`promo_${promo.id}`}
-              promo={promo}
-              navigation={navigation}
-            />
-          ))}
-        </View>
-      )}
-      <View style={styles.sectionTitle}>
-        <Ionicon name="flame" size={18} color={theme.colors.text} />
-        <CustomText weight="600SemiBold" size={18} ml={6}>
-          Горячие заявки
-        </CustomText>
-      </View>
-      {pending ? (
-        <SmallLoader />
-      ) : (
-        requests.map((req: IRequest) => (
-          <Request
-            request={req}
-            navigation={navigation}
-            key={`request_${req.id}`}
-          />
-        ))
+        <>
+          <View style={[styles.sectionTitle, { marginTop: 16 }]}>
+            <Ionicon name="newspaper" size={18} color={theme.colors.text} />
+            <CustomText weight="600SemiBold" size={18} ml={6}>
+              Промо фанфиков
+            </CustomText>
+          </View>
+          <View style={styles.promos}>
+            {promos.map((promo: IPromo) => (
+              <Promo
+                key={`promo_${promo.id}`}
+                promo={promo}
+                navigation={navigation}
+              />
+            ))}
+          </View>
+          <View>
+            <CustomText weight="600SemiBold" mb={14} size={18}>
+              Категории
+            </CustomText>
+            <View style={[styles.list, { marginBottom: 16 }]}>
+              {extras.categories.map(c => (
+                <Pressable style={styles.item}>
+                  <CustomText weight="500Medium">{c.title}</CustomText>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+          <View>
+            <CustomText weight="600SemiBold" mb={14} size={18}>
+              Популярные фэндомы
+            </CustomText>
+            <View style={styles.list}>
+              {extras.fandoms.map((f: IFandom) => (
+                <Pressable style={styles.item} onPress={() => pressFandom(f)}>
+                  <CustomText weight="500Medium">{f.title}</CustomText>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+          <View style={{ marginTop: 16 }}>
+            <CustomText weight="600SemiBold" size={18} mb={14}>
+              5 случайных работ
+            </CustomText>
+            {fanfics.map((f: IFanfic) => (
+              <Fanfic fanfic={f} navigation={navigation} />
+            ))}
+          </View>
+          {!!requests?.length && (
+            <>
+              <View style={styles.sectionTitle}>
+                <Ionicon name="flame" size={18} color={theme.colors.text} />
+                <CustomText weight="600SemiBold" size={18} ml={6}>
+                  Горячие заявки
+                </CustomText>
+              </View>
+              {requests.map((req: IRequest) => (
+                <Request
+                  request={req}
+                  navigation={navigation}
+                  key={`request_${req.id}`}
+                />
+              ))}
+            </>
+          )}
+        </>
       )}
       <View style={styles.space} />
     </PageContainer>
@@ -106,5 +148,18 @@ const createStyles = (theme: ExtendedTheme) =>
     },
     space: {
       height: 20,
+    },
+    list: {
+      flexDirection: "row",
+      alignItems: "center",
+      flexWrap: "wrap",
+    },
+    item: {
+      backgroundColor: theme.colors.card,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: 4,
+      marginBottom: 6,
+      marginRight: 6,
     },
   });
