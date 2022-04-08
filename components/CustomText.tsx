@@ -89,7 +89,7 @@ const CustomText = ({
         {
           pattern: readficReg,
           style: { color: colors.orangeAccentHEX },
-          getLinkText: () => "(ссылка на фанфик)",
+          getLinkText: () => "ссылка на фанфик",
           onPress: getFanficID,
         },
         {

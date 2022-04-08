@@ -6,13 +6,14 @@ import SmallLoader from "./SmallLoader";
 interface ImageBackgroundWithLoadingProps {
   uri: string;
   style?: ViewStyle | ViewStyle[];
+  children: React.ReactNode;
 }
 
-const ImageBackgroundWithLoading: React.FC<ImageBackgroundWithLoadingProps> = ({
+const ImageBackgroundWithLoading = ({
   uri,
   style,
   children,
-}) => {
+}: ImageBackgroundWithLoadingProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [loaded, setLoaded] = useState<boolean>(false);

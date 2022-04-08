@@ -53,9 +53,17 @@ function Home() {
         />
       }
     >
-      <CustomText weight="700Bold" size={24} mb={16}>
-        Ficbook
-      </CustomText>
+      <View style={styles.header}>
+        <CustomText weight="700Bold" size={24}>
+          Ficbook
+        </CustomText>
+        <Pressable
+          style={styles.search}
+          onPress={() => navigation.push("commonsearch")}
+        >
+          <Ionicon name="search" color={theme.colors.text} size={20} />
+        </Pressable>
+      </View>
       <SearchFandom navigation={navigation} />
       {pending ? (
         <SmallLoader style={{ flex: 1 }} />
@@ -161,5 +169,19 @@ const createStyles = (theme: ExtendedTheme) =>
       borderRadius: 4,
       marginBottom: 6,
       marginRight: 6,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 16,
+    },
+    search: {
+      backgroundColor: theme.colors.card,
+      borderRadius: 6,
+      width: 35,
+      height: 35,
+      justifyContent: "center",
+      alignItems: "center",
     },
   });

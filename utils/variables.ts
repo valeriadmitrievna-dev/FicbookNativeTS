@@ -37,3 +37,13 @@ export const ratings = [
   { key: "NC-17", value: "NC-17" },
   { key: "NC-21", value: "NC-21" },
 ];
+
+export const directions_by_numbers = {
+  1: "gen",
+  2: "het",
+  3: "slash",
+  4: "femslash",
+  5: "article",
+  6: "mixed",
+  7: "other",
+};

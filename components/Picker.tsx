@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
 import CustomModal from "./CustomModal";
 import CustomText from "./CustomText";
@@ -33,7 +33,7 @@ const Picker = ({ data, selectedValue, onValueChange, style }: PickerProps) => {
 
   const choose = (item: { key: Key; value: Value }) => {
     onValueChange(item.key);
-    closePicker();
+    closePicker()
   };
 
   return (

@@ -24,6 +24,8 @@ import TabBarButton from "./components/TabBarButton";
 import Popular from "./screens/Popular";
 import Fanfic from "./screens/Fanfic";
 import Fandom from "./screens/Fandom";
+import CommonSearch from "./screens/CommonSearch";
+import AdvancedSearch from "./screens/AdvancedSearch";
 
 const CustomLightTheme: ExtendedTheme = {
   ...DefaultTheme,
@@ -80,6 +82,7 @@ const Main = () => (
   >
     <Tab.Screen name="home" component={Home} />
     {/* <Tab.Screen name="popular" component={Popular} /> */}
+    <Tab.Screen name="advancedsearch" component={AdvancedSearch} />
   </Tab.Navigator>
 );
 
@@ -109,9 +112,10 @@ export default function App() {
           })}
           initialRouteName="main"
         >
-          <Tab.Screen name="main" component={Main} />
-          <Tab.Screen name="fanfic" component={Fanfic} />
-          <Tab.Screen name="fandom" component={Fandom} />
+          <Stack.Screen name="main" component={Main} />
+          <Stack.Screen name="fanfic" component={Fanfic} />
+          <Stack.Screen name="fandom" component={Fandom} />
+          <Stack.Screen name="commonsearch" component={CommonSearch} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

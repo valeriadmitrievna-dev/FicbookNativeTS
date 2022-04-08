@@ -94,7 +94,7 @@ const createStyles = (theme: ExtendedTheme) =>
       borderWidth: 2,
       paddingHorizontal: 18,
       paddingVertical: 10,
-      borderRadius: 10,
+      borderRadius: 6,
       borderColor: theme.colors.text,
       position: "relative",
     },

@@ -19,8 +19,9 @@ import {
   RatingList,
 } from "../utils/variables";
 import { usePromise } from "../hooks/usePromise";
-import ScreenLoader from "../components/ScreenLoader";
 import Picker from "../components/Picker";
+import SmallLoader from "../components/SmallLoader";
+import useUpdateEffect from "../hooks/useUpdateEffect";
 
 type DirectionPicker = "any direction" | DirectionList;
 type RatingPicker = "any rating" | RatingList;
@@ -40,15 +41,47 @@ const Fandom = ({ route }: FandomProps) => {
 
   const [direction, setDirection] = useState<DirectionPicker>("any direction");
   const [rating, setRating] = useState<RatingPicker>("any rating");
+  const [options, setOptions] = useState<[number | "", number | ""]>(["", ""]);
 
   const getFandom = API.get(
-    `/fandom/${_fandom.group}/${_fandom.slug}/${page}`
+    `/fandom/${_fandom.group}/${_fandom.slug}/${page}?filterDirection=${options[0]}&rating=${options[1]}`
   ).then(d => d.data);
   const [{ fandom, fanfics, pages }, error, pending] = usePromise(
     getFandom,
     {},
-    [page]
+    [page, options]
   );
+
+  const nextPage = () => {
+    setPage(page + 1);
+  };
+  const prevPage = () => {
+    setPage(page - 1);
+  };
+
+  const getDirectionKey = (direction: DirectionPicker) => {
+    if (direction === "gen") return 1;
+    if (direction === "het") return 2;
+    if (direction === "slash") return 3;
+    if (direction === "femslash") return 4;
+    if (direction === "article") return 5;
+    if (direction === "mixed") return 6;
+    if (direction === "other") return 7;
+    else return "";
+  };
+  const getRatingKey = (rating: RatingPicker) => {
+    if (rating === "G") return 5;
+    if (rating === "PG-13") return 6;
+    if (rating === "R") return 7;
+    if (rating === "NC-17") return 8;
+    if (rating === "NC-21") return 9;
+    else return "";
+  };
+  const updateOptions = () => {
+    const d_key = getDirectionKey(direction);
+    const r_key = getRatingKey(rating);
+    setOptions([d_key, r_key]);
+  };
 
   useEffect(() => {
     if (!_fandom) {
@@ -63,25 +96,25 @@ const Fandom = ({ route }: FandomProps) => {
   return (
     <PageContainer fullHeight>
       <>
+        <View style={styles.header}>
+          <CustomText
+            weight="600SemiBold"
+            size={22}
+            line={28}
+            mt={6}
+            width="80%"
+          >
+            {fandom?.title || _fandom.title}
+          </CustomText>
+          <BackButton />
+        </View>
+        {(!!fandom?.subtitle || !!_fandom.subtitle) && (
+          <CustomText italic width="90%" mb={16}>
+            {fandom?.subtitle || _fandom.subtitle}
+          </CustomText>
+        )}
         {!pending && !!fandom ? (
           <>
-            <View style={styles.header}>
-              <CustomText
-                weight="600SemiBold"
-                size={22}
-                line={28}
-                mt={6}
-                width="80%"
-              >
-                {fandom.title}
-              </CustomText>
-              <BackButton />
-            </View>
-            {!!fandom.subtitle && (
-              <CustomText italic width="90%" mb={16}>
-                {fandom.subtitle}
-              </CustomText>
-            )}
             <Picker
               data={[
                 { key: "any direction", value: "любое направление" },
@@ -96,10 +129,18 @@ const Fandom = ({ route }: FandomProps) => {
               selectedValue={rating}
               onValueChange={(value: RatingPicker) => setRating(value)}
             />
+            <Pressable
+              style={styles.button}
+              disabled={pending}
+              onPress={updateOptions}
+            >
+              <CustomText weight="500Medium">Показать результаты</CustomText>
+            </Pressable>
             <View style={[styles.navigation, { marginTop: 24 }]}>
               <Pressable
                 style={[styles.navbutton, { opacity: page <= 1 ? 0.5 : 1 }]}
-                disabled={page <= 1}
+                disabled={pending || page <= 1}
+                onPress={prevPage}
               >
                 <Icon name="chevron-left" size={18} />
                 <CustomText weight="500Medium">Назад</CustomText>
@@ -114,7 +155,8 @@ const Fandom = ({ route }: FandomProps) => {
                   styles.navbutton,
                   { opacity: page === pages ? 0.5 : 1 },
                 ]}
-                disabled={page === pages}
+                disabled={pending || page === pages}
+                onPress={nextPage}
               >
                 <CustomText weight="500Medium">Вперед</CustomText>
                 <Icon name="chevron-right" size={18} />
@@ -132,7 +174,8 @@ const Fandom = ({ route }: FandomProps) => {
             <View style={[styles.navigation, { marginBottom: 72 }]}>
               <Pressable
                 style={[styles.navbutton, { opacity: page <= 1 ? 0.5 : 1 }]}
-                disabled={page <= 1}
+                disabled={pending || page <= 1}
+                onPress={prevPage}
               >
                 <Icon name="chevron-left" size={18} />
                 <CustomText weight="500Medium">Назад</CustomText>
@@ -147,7 +190,8 @@ const Fandom = ({ route }: FandomProps) => {
                   styles.navbutton,
                   { opacity: page === pages ? 0.5 : 1 },
                 ]}
-                disabled={page === pages}
+                disabled={pending || page === pages}
+                onPress={nextPage}
               >
                 <CustomText weight="500Medium">Вперед</CustomText>
                 <Icon name="chevron-right" size={18} />
@@ -155,7 +199,7 @@ const Fandom = ({ route }: FandomProps) => {
             </View>
           </>
         ) : (
-          <ScreenLoader />
+          <SmallLoader style={{ flex: 1 }} />
         )}
       </>
     </PageContainer>
@@ -189,5 +233,14 @@ const createStyles = (theme: ExtendedTheme) =>
       alignItems: "center",
       justifyContent: "space-between",
       width: 120,
+    },
+    button: {
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 3,
+      alignSelf: "center",
+      marginTop: 14,
+      borderWidth: 2,
+      borderColor: theme.colors.text,
     },
   });

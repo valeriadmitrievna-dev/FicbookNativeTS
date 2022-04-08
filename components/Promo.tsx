@@ -100,7 +100,7 @@ const createStyles = (theme: ExtendedTheme) =>
     promo: {
       width: Dimensions.get("window").width / 2 - 24,
       height: 250,
-      borderRadius: 8,
+      borderRadius: 6,
       overflow: "hidden",
       borderWidth: 3,
       marginBottom: 20,

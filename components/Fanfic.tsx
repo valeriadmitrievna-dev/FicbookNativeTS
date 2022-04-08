@@ -40,9 +40,23 @@ export default function Fanfic({
   return (
     <>
       {!!rating_number && (
-        <CustomText mb={6} weight="500Medium">
-          №{rating_number.number} — {rating_number.count} оценок за 7 дней
-        </CustomText>
+        <Text>
+          <CustomText mb={6} weight="500Medium">
+            №
+          </CustomText>
+          <CustomText mb={6} weight="500Medium">
+            {rating_number.number}
+          </CustomText>
+          <CustomText mb={6} weight="500Medium">
+            —
+          </CustomText>
+          <CustomText mb={6} weight="500Medium">
+            {rating_number.count}
+          </CustomText>
+          <CustomText mb={6} weight="500Medium">
+            оценок за 7 дней
+          </CustomText>
+        </Text>
       )}
       <View
         style={[
