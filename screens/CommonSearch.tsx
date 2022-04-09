@@ -130,7 +130,7 @@ const CommonSearch = () => {
                   {f.title}
                 </CustomText>
               </View>
-              <CustomText size={14} italic color={theme.colors.primary}>
+              <CustomText size={14} ml={22} italic color={theme.colors.primary}>
                 {f.sec_title}
               </CustomText>
             </Pressable>

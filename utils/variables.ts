@@ -47,3 +47,10 @@ export const directions_by_numbers = {
   6: "mixed",
   7: "other",
 };
+export const ratings_by_numbers = {
+  5: "G",
+  6: "PG-13",
+  7: "R",
+  8: "NC-17",
+  9: "NC-21",
+};
