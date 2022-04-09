@@ -9,8 +9,9 @@ import Animated, {
 import API from "../api";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
 import SmallLoader from "./SmallLoader";
-import { hexToRgb } from "../utils/functions";
 import { usePromise } from "../hooks/usePromise";
+import CustomText from "./CustomText";
+import Input from "./Input";
 
 interface SuggestibleInputProps {
   url: string;
@@ -49,11 +50,9 @@ export default function SuggestibleInput({
 
   return (
     <>
-      <TextInput
+      <Input
         style={[styles.container, styles.input, style]}
-        selectionColor={theme.colors.text}
         placeholder={placeholder}
-        placeholderTextColor={theme.colors.text}
         onPressIn={() => {
           if (height.value) {
             height.value = 0;
@@ -61,11 +60,21 @@ export default function SuggestibleInput({
             height.value = 10000;
           }
         }}
-        onChangeText={setQuery}
+        onChange={setQuery}
         value={query}
       />
       <Animated.View style={[styles.dropdown, animatedStyles]}>
-        {!pending && !!results?.length ? results.map(item) : <SmallLoader />}
+        {!pending ? (
+          !!results?.length ? (
+            results.map(item)
+          ) : (
+            <CustomText ml={16} mt={10} mb={10}>
+              Совпадений не найдено
+            </CustomText>
+          )
+        ) : (
+          <SmallLoader />
+        )}
       </Animated.View>
     </>
   );
