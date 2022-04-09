@@ -101,6 +101,7 @@ export default function AdvancedSearch() {
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   const [allowedTags, setAllowedTags] = useState<ITag[]>([]);
+  const [unallowedTags, setUnallowedTags] = useState<ITag[]>([]);
 
   const addTag = (tag: ITag, action: Function, array: ITag[]) => {
     if (!array.includes(tag)) action([...array, tag]);
@@ -124,6 +125,7 @@ export default function AdvancedSearch() {
         `pages_min=${pagesMin}`,
         `pages_max=${pagesMax}`,
         allowedTags.map(t => `tags_include[]=${t.id}`).join("&"),
+        unallowedTags.map(t => `tags_exclude[]=${t.id}`).join("&"),
         `likes_min=${likesMin}`,
         `likes_max=${likesMax}`,
         `rewards_min=${rewards}`,
@@ -326,6 +328,52 @@ export default function AdvancedSearch() {
               <Pressable
                 style={styles.tag}
                 onPress={() => addTag(data, setAllowedTags, allowedTags)}
+              >
+                <View style={[styles.row, { marginBottom: 6 }]}>
+                  <Tag tag={data} style={{ marginBottom: 0 }} />
+                  <Text>
+                    <CustomText size={14}> x </CustomText>
+                    <CustomText size={14}>{data.usage}</CustomText>
+                  </Text>
+                </View>
+                <CustomText size={14} italic>
+                  {data.description}
+                </CustomText>
+              </Pressable>
+            );
+          }}
+          style={styles.input}
+          dropdown={{
+            // borderWidth: 1,
+            borderRadius: 2,
+            borderColor: theme.colors.text,
+          }}
+        />
+      </>
+      <View style={styles.vspace} />
+      {/* unallowed tags list */}
+      <>
+        <CustomText weight="500Medium" mb={6}>
+          Исключить метки
+        </CustomText>
+        {!!unallowedTags.length && (
+          <View style={styles.tags}>
+            {unallowedTags.map(tag => (
+              <Tag
+                tag={tag}
+                onPress={() => deleteTag(tag, setUnallowedTags, unallowedTags)}
+              />
+            ))}
+          </View>
+        )}
+        <SuggestibleInput
+          url="/tags/search"
+          placeholder="Начните вводить или выберите..."
+          item={(data: ITag, id: number, array: any[]) => {
+            return (
+              <Pressable
+                style={styles.tag}
+                onPress={() => addTag(data, setUnallowedTags, unallowedTags)}
               >
                 <View style={[styles.row, { marginBottom: 6 }]}>
                   <Tag tag={data} style={{ marginBottom: 0 }} />
