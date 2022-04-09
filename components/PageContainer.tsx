@@ -25,6 +25,7 @@ interface PageContainerProps {
   scrollTo?: ScrollToObject;
   scrollBottom?: boolean;
   refreshControl?: ReactElement;
+  ref?: React.MutableRefObject<ScrollView>;
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({
@@ -33,13 +34,14 @@ const PageContainer: React.FC<PageContainerProps> = ({
   fullHeight,
   scrollTo,
   scrollBottom,
-  refreshControl
+  refreshControl,
+  ref,
   // sticky = [],
 }) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = ref || useRef<ScrollView>(null);
   const CONTENT_OFFSET_THRESHOLD = 200;
 
   const AnimatedTouchable = Animated.createAnimatedComponent(Pressable);
