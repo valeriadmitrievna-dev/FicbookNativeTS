@@ -34,6 +34,7 @@ export default function SuggestibleInput({
   const [query, setQuery] = useState("");
 
   const height = useSharedValue(0);
+  const offset = useSharedValue(0);
   const config = {
     duration: 500,
     easing: Easing.bezier(0.5, 0.01, 0, 1),
@@ -42,6 +43,7 @@ export default function SuggestibleInput({
     return {
       maxHeight: withTiming(height.value, config),
       overflow: "hidden",
+      marginTop: withTiming(offset.value, config),
     };
   });
 
@@ -58,8 +60,10 @@ export default function SuggestibleInput({
         onPressIn={() => {
           if (height.value) {
             height.value = 0;
+            offset.value = 0
           } else {
             height.value = 10000;
+            offset.value = 5
           }
         }}
         onChange={setQuery}
@@ -102,7 +106,6 @@ const createStyles = (theme: ExtendedTheme) =>
       fontFamily: "Montserrat_400Regular",
     },
     dropdown: {
-      marginTop: 5,
       backgroundColor: theme.colors.primary,
       borderRadius: 10,
     },

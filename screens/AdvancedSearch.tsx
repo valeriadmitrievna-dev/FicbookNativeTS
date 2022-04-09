@@ -29,13 +29,14 @@ import {
 } from "../utils/variables";
 import Input from "../components/Input";
 import API from "../api";
-import { IFanfic, ITag } from "../interfaces";
+import { IFandom, IFanfic, ITag } from "../interfaces";
 import SmallLoader from "../components/SmallLoader";
 import Navigation from "../components/Navigation";
 import Fanfic from "../components/Fanfic";
 import SuggestibleInput from "../components/SuggestibleInput";
 import { hexToRgb } from "../utils/functions";
 import Tag from "../components/Tag";
+import FandomToChoose from "../components/FandomToChoose";
 
 interface Selected {
   key: string | number;
@@ -47,7 +48,7 @@ export default function AdvancedSearch() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [fandomFilter, setFandomFilter] = useState<Selected>(
-    fandom_filters.find(f => f.key === "any")
+    fandom_filters.find(f => f.key === "fandom")
   );
   const [pagesFilter, setPagesFilter] = useState<Selected>(
     pages_filter.find(p => p.key === 1)
@@ -100,14 +101,16 @@ export default function AdvancedSearch() {
   const [query, setQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(0);
 
+  const [allowedFandoms, setAllowedFandoms] = useState<IFandom[]>([]);
+  const [unallowedFandoms, setUnallowedFandoms] = useState<IFandom[]>([]);
   const [allowedTags, setAllowedTags] = useState<ITag[]>([]);
   const [unallowedTags, setUnallowedTags] = useState<ITag[]>([]);
 
-  const addTag = (tag: ITag, action: Function, array: ITag[]) => {
-    if (!array.includes(tag)) action([...array, tag]);
+  const addToArray = (el: any, action: Function, array: any[]) => {
+    if (!array.includes(el)) action([...array, el]);
   };
-  const deleteTag = (tag: ITag, action: Function, array: ITag[]) => {
-    if (array.includes(tag)) action([...array.filter(t => t !== tag)]);
+  const deleteFromArray = (el: any, action: Function, array: any[]) => {
+    if (array.includes(el)) action([...array.filter(i => i !== el)]);
   };
 
   const isMounted = useRef<boolean>(false);
@@ -115,6 +118,8 @@ export default function AdvancedSearch() {
     setQuery(
       [
         `fandom_filter=${fandomFilter.key}`,
+        allowedFandoms.map(f => `fandom_ids[]=${f.id}`).join("&"),
+        unallowedFandoms.map(f => `fandom_exclude_ids[]=${f.id}`).join("&"),
         `pages_range=${pagesFilter.key}`,
         statusFilter.map(s => `statuses[]=${s.key}`).join("&"),
         sizeFilter.map(s => `sizes[]=${s.key}`).join("&"),
@@ -186,6 +191,94 @@ export default function AdvancedSearch() {
             setFandomFilter(el);
           }}
         />
+        {fandomFilter.key === "fandom" && (
+          <View style={styles.filter}>
+            <CustomText weight="500Medium" mb={6}>
+              Фэндомы
+            </CustomText>
+            {!!allowedFandoms.length &&
+              allowedFandoms.map(f => (
+                <FandomToChoose
+                  fandom={f}
+                  onPress={() =>
+                    deleteFromArray(f, setAllowedFandoms, allowedFandoms)
+                  }
+                  style={{
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderBottomWidth: 0,
+                    borderRadius: 2,
+                    marginBottom: 6,
+                  }}
+                />
+              ))}
+            <SuggestibleInput
+              url="/search"
+              placeholder="Укажите фэндом"
+              item={(data: IFandom) => (
+                <FandomToChoose
+                  fandom={data}
+                  onPress={() =>
+                    addToArray(data, setAllowedFandoms, allowedFandoms)
+                  }
+                  style={{
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderBottomWidth: 0,
+                  }}
+                />
+              )}
+              style={styles.input}
+              dropdown={{
+                // borderWidth: 1,
+                borderRadius: 2,
+                borderColor: theme.colors.text,
+              }}
+            />
+            <CustomText weight="500Medium" mb={6} mt={16}>
+              Исключить фэндомы
+            </CustomText>
+            {!!unallowedFandoms.length &&
+              unallowedFandoms.map(f => (
+                <FandomToChoose
+                  fandom={f}
+                  onPress={() =>
+                    deleteFromArray(f, setUnallowedFandoms, unallowedFandoms)
+                  }
+                  style={{
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderBottomWidth: 0,
+                    borderRadius: 2,
+                    marginBottom: 6,
+                  }}
+                />
+              ))}
+            <SuggestibleInput
+              url="/search"
+              placeholder="Укажите фэндом"
+              item={(data: IFandom) => (
+                <FandomToChoose
+                  fandom={data}
+                  onPress={() =>
+                    addToArray(data, setUnallowedFandoms, unallowedFandoms)
+                  }
+                  style={{
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderBottomWidth: 0,
+                  }}
+                />
+              )}
+              style={styles.input}
+              dropdown={{
+                // borderWidth: 1,
+                borderRadius: 2,
+                borderColor: theme.colors.text,
+              }}
+            />
+          </View>
+        )}
       </>
       <View style={styles.vspace} />
       {/* pages count filter */}
@@ -315,7 +408,9 @@ export default function AdvancedSearch() {
             {allowedTags.map(tag => (
               <Tag
                 tag={tag}
-                onPress={() => deleteTag(tag, setAllowedTags, allowedTags)}
+                onPress={() =>
+                  deleteFromArray(tag, setAllowedTags, allowedTags)
+                }
               />
             ))}
           </View>
@@ -327,7 +422,7 @@ export default function AdvancedSearch() {
             return (
               <Pressable
                 style={styles.tag}
-                onPress={() => addTag(data, setAllowedTags, allowedTags)}
+                onPress={() => addToArray(data, setAllowedTags, allowedTags)}
               >
                 <View style={[styles.row, { marginBottom: 6 }]}>
                   <Tag tag={data} style={{ marginBottom: 0 }} />
@@ -361,7 +456,9 @@ export default function AdvancedSearch() {
             {unallowedTags.map(tag => (
               <Tag
                 tag={tag}
-                onPress={() => deleteTag(tag, setUnallowedTags, unallowedTags)}
+                onPress={() =>
+                  deleteFromArray(tag, setUnallowedTags, unallowedTags)
+                }
               />
             ))}
           </View>
@@ -373,7 +470,9 @@ export default function AdvancedSearch() {
             return (
               <Pressable
                 style={styles.tag}
-                onPress={() => addTag(data, setUnallowedTags, unallowedTags)}
+                onPress={() =>
+                  addToArray(data, setUnallowedTags, unallowedTags)
+                }
               >
                 <View style={[styles.row, { marginBottom: 6 }]}>
                   <Tag tag={data} style={{ marginBottom: 0 }} />
@@ -555,5 +654,13 @@ const createStyles = (theme: ExtendedTheme) =>
       alignItems: "center",
       flexWrap: "wrap",
       marginBottom: 6,
+    },
+    filter: {
+      backgroundColor: `rgba(${hexToRgb(theme.colors.card)}, 0.5)`,
+      borderLeftWidth: 4,
+      borderLeftColor: `rgba(${hexToRgb(theme.colors.card)}, 0.75)`,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      marginTop: 6,
     },
   });
