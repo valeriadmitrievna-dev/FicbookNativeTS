@@ -21,7 +21,7 @@ import {
 import { usePromise } from "../hooks/usePromise";
 import Picker from "../components/Picker";
 import SmallLoader from "../components/SmallLoader";
-import useUpdateEffect from "../hooks/useUpdateEffect";
+import Navigation from "../components/Navigation";
 
 type DirectionPicker = "any direction" | DirectionList;
 type RatingPicker = "any rating" | RatingList;
@@ -136,32 +136,14 @@ const Fandom = ({ route }: FandomProps) => {
             >
               <CustomText weight="500Medium">Показать результаты</CustomText>
             </Pressable>
-            <View style={[styles.navigation, { marginTop: 24 }]}>
-              <Pressable
-                style={[styles.navbutton, { opacity: page <= 1 ? 0.5 : 1 }]}
-                disabled={pending || page <= 1}
-                onPress={prevPage}
-              >
-                <Icon name="chevron-left" size={18} />
-                <CustomText weight="500Medium">Назад</CustomText>
-              </Pressable>
-              <Text style={{ textDecorationLine: "underline" }}>
-                <CustomText ml={8}>{page}</CustomText>
-                <CustomText> из </CustomText>
-                <CustomText mr={8}>{pages}</CustomText>
-              </Text>
-              <Pressable
-                style={[
-                  styles.navbutton,
-                  { opacity: page === pages ? 0.5 : 1 },
-                ]}
-                disabled={pending || page === pages}
-                onPress={nextPage}
-              >
-                <CustomText weight="500Medium">Вперед</CustomText>
-                <Icon name="chevron-right" size={18} />
-              </Pressable>
-            </View>
+            <Navigation
+              currentPage={page}
+              pages={pages}
+              onNextPage={nextPage}
+              onPrevPage={prevPage}
+              style={{ marginTop: 24 }}
+              isLoading={pending}
+            />
             <View style={styles.works}>
               {fanfics?.map((fanfic: IFanfic) => (
                 <Fanfic
@@ -171,32 +153,14 @@ const Fandom = ({ route }: FandomProps) => {
                 />
               ))}
             </View>
-            <View style={[styles.navigation, { marginBottom: 72 }]}>
-              <Pressable
-                style={[styles.navbutton, { opacity: page <= 1 ? 0.5 : 1 }]}
-                disabled={pending || page <= 1}
-                onPress={prevPage}
-              >
-                <Icon name="chevron-left" size={18} />
-                <CustomText weight="500Medium">Назад</CustomText>
-              </Pressable>
-              <Text style={{ textDecorationLine: "underline" }}>
-                <CustomText ml={8}>{page}</CustomText>
-                <CustomText> из </CustomText>
-                <CustomText mr={8}>{pages}</CustomText>
-              </Text>
-              <Pressable
-                style={[
-                  styles.navbutton,
-                  { opacity: page === pages ? 0.5 : 1 },
-                ]}
-                disabled={pending || page === pages}
-                onPress={nextPage}
-              >
-                <CustomText weight="500Medium">Вперед</CustomText>
-                <Icon name="chevron-right" size={18} />
-              </Pressable>
-            </View>
+            <Navigation
+              currentPage={page}
+              pages={pages}
+              onNextPage={nextPage}
+              onPrevPage={prevPage}
+              style={{ marginBottom: 72 }}
+              isLoading={pending}
+            />
           </>
         ) : (
           <SmallLoader style={{ flex: 1 }} />
@@ -218,21 +182,6 @@ const createStyles = (theme: ExtendedTheme) =>
     works: {
       marginBottom: 24,
       marginTop: 24,
-    },
-    navigation: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    navbutton: {
-      paddingVertical: 6,
-      paddingHorizontal: 12,
-      borderRadius: 4,
-      backgroundColor: theme.colors.card,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      width: 120,
     },
     button: {
       paddingVertical: 6,
