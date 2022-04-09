@@ -1,4 +1,11 @@
-import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ExtendedTheme,
@@ -22,10 +29,13 @@ import {
 } from "../utils/variables";
 import Input from "../components/Input";
 import API from "../api";
-import { IFanfic } from "../interfaces";
+import { IFanfic, ITag } from "../interfaces";
 import SmallLoader from "../components/SmallLoader";
 import Navigation from "../components/Navigation";
 import Fanfic from "../components/Fanfic";
+import SuggestibleInput from "../components/SuggestibleInput";
+import { hexToRgb } from "../utils/functions";
+import Tag from "../components/Tag";
 
 interface Selected {
   key: string | number;
@@ -90,6 +100,15 @@ export default function AdvancedSearch() {
   const [query, setQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(0);
 
+  const [allowedTags, setAllowedTags] = useState<ITag[]>([]);
+
+  const addTag = (tag: ITag, action: Function, array: ITag[]) => {
+    if (!array.includes(tag)) action([...array, tag]);
+  };
+  const deleteTag = (tag: ITag, action: Function, array: ITag[]) => {
+    if (array.includes(tag)) action([...array.filter(t => t !== tag)]);
+  };
+
   const isMounted = useRef<boolean>(false);
   const submit = () => {
     setQuery(
@@ -104,6 +123,7 @@ export default function AdvancedSearch() {
         `sort=${sortingFilter.key}`,
         `pages_min=${pagesMin}`,
         `pages_max=${pagesMax}`,
+        allowedTags.map(t => `tags_include[]=${t.id}`).join("&"),
         `likes_min=${likesMin}`,
         `likes_max=${likesMax}`,
         `rewards_min=${rewards}`,
@@ -282,6 +302,52 @@ export default function AdvancedSearch() {
           }}
         />
       </>
+      <View style={styles.vspace} />
+      {/* allowed tags list */}
+      <>
+        <CustomText weight="500Medium" mb={6}>
+          Включить метки
+        </CustomText>
+        {!!allowedTags.length && (
+          <View style={styles.tags}>
+            {allowedTags.map(tag => (
+              <Tag
+                tag={tag}
+                onPress={() => deleteTag(tag, setAllowedTags, allowedTags)}
+              />
+            ))}
+          </View>
+        )}
+        <SuggestibleInput
+          url="/tags/search"
+          placeholder="Начните вводить или выберите..."
+          item={(data: ITag, id: number, array: any[]) => {
+            return (
+              <Pressable
+                style={styles.tag}
+                onPress={() => addTag(data, setAllowedTags, allowedTags)}
+              >
+                <View style={[styles.row, { marginBottom: 6 }]}>
+                  <Tag tag={data} style={{ marginBottom: 0 }} />
+                  <Text>
+                    <CustomText size={14}> x </CustomText>
+                    <CustomText size={14}>{data.usage}</CustomText>
+                  </Text>
+                </View>
+                <CustomText size={14} italic>
+                  {data.description}
+                </CustomText>
+              </Pressable>
+            );
+          }}
+          style={styles.input}
+          dropdown={{
+            // borderWidth: 1,
+            borderRadius: 2,
+            borderColor: theme.colors.text,
+          }}
+        />
+      </>
       {/* likes count */}
       <View style={styles.vspace} />
       <>
@@ -376,6 +442,15 @@ export default function AdvancedSearch() {
             {fanfics.map(f => (
               <Fanfic fanfic={f} navigation={navigation} />
             ))}
+            {pages > 1 && (
+              <Navigation
+                currentPage={currentPage}
+                pages={pages}
+                onNextPage={nextPage}
+                onPrevPage={prevPage}
+                style={{ marginBottom: 72, marginTop: 24 }}
+              />
+            )}
           </View>
         ) : (
           <>
@@ -415,11 +490,22 @@ const createStyles = (theme: ExtendedTheme) =>
     },
     row: {
       flexDirection: "row",
+      alignItems: "center",
     },
     input: {
       borderWidth: 1,
       borderRadius: 2,
       paddingVertical: 2,
       paddingHorizontal: 10,
+    },
+    tag: {
+      paddingVertical: 8,
+      paddingHorizontal: 10,
+    },
+    tags: {
+      flexDirection: "row",
+      alignItems: "center",
+      flexWrap: "wrap",
+      marginBottom: 6,
     },
   });

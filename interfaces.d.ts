@@ -1,3 +1,4 @@
+import { ViewStyle } from "react-native";
 import { DirectionList, RatingList, StatusList } from "./utils/variables";
 
 export interface TextProps {
@@ -16,7 +17,7 @@ export interface TextProps {
   italic?: boolean;
   width?: string | number;
   numberOfLines?: number;
-  style?: TextStyle;
+  style?: TextStyle & ViewStyle;
   children: string | number;
 }
 
@@ -56,6 +57,8 @@ export interface ITag {
   id: string;
   adult: boolean;
   spoiler?: boolean;
+  synonyms?: string;
+  usage?: number;
 }
 
 export interface ITagInfo {

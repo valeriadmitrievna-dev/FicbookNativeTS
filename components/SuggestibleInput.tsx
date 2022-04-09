@@ -18,6 +18,7 @@ interface SuggestibleInputProps {
   placeholder: string;
   item: (data: any, id: number, array: any[]) => JSX.Element;
   style?: ViewStyle;
+  dropdown?: ViewStyle;
 }
 
 export default function SuggestibleInput({
@@ -25,6 +26,7 @@ export default function SuggestibleInput({
   placeholder,
   item,
   style,
+  dropdown
 }: SuggestibleInputProps) {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -63,7 +65,7 @@ export default function SuggestibleInput({
         onChange={setQuery}
         value={query}
       />
-      <Animated.View style={[styles.dropdown, animatedStyles]}>
+      <Animated.View style={[styles.dropdown, dropdown, animatedStyles]}>
         {!pending ? (
           !!results?.length ? (
             results.map(item)

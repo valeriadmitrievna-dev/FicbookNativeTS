@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, View, Text } from "react-native";
+import { StyleSheet, Pressable, View, Text, ViewStyle } from "react-native";
 import React, { useMemo, useState } from "react";
 import CustomText from "./CustomText";
 import { ExtendedTheme, useTheme } from "@react-navigation/native";
@@ -11,9 +11,11 @@ import SmallLoader from "./SmallLoader";
 
 interface TagProps {
   tag: ITag;
+  onPress?: (tag: ITag) => void;
+  style?: ViewStyle;
 }
 
-const Tag = ({ tag }: TagProps) => {
+const Tag = ({ tag, onPress, style }: TagProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -51,7 +53,10 @@ const Tag = ({ tag }: TagProps) => {
         )}
       </CustomModal>
       <Pressable
-        onPress={openModal}
+        onPress={() => {
+          if (onPress) onPress(tag);
+          else openModal();
+        }}
         style={[
           styles.tag,
           {
@@ -59,6 +64,7 @@ const Tag = ({ tag }: TagProps) => {
               ? theme.colors.card
               : `rgba(${hexToRgb(theme.colors.card)}, 0.75)`,
           },
+          style
         ]}
       >
         <CustomText size={13} weight={tag.adult ? "600SemiBold" : "500Medium"}>

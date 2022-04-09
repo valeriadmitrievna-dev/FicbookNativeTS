@@ -8,14 +8,16 @@ import CustomText from "./CustomText";
 interface TagsProps {
   tags: ITag[];
   style?: ViewStyle;
+  onPress?: (tag: ITag) => void;
+  spoilers?: boolean;
 }
 
-const Tags = ({ tags, style }: TagsProps) => {
+const Tags = ({ tags, style, onPress, spoilers }: TagsProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [tagsList, setTagsList] = useState<ITag[]>(
-    tags.filter(t => !t.spoiler)
+    tags.filter(t => (spoilers ? true : !t.spoiler))
   );
 
   const showSpoilers = useCallback(() => {
@@ -25,7 +27,11 @@ const Tags = ({ tags, style }: TagsProps) => {
   return (
     <View style={[styles.tags, style]}>
       {tagsList.map(t => (
-        <Tag tag={t} key={`tag_${t.id}_${Math.round(Math.random() * 10000)}`} />
+        <Tag
+          tag={t}
+          key={`tag_${t.id}_${Math.round(Math.random() * 10000)}`}
+          onPress={onPress}
+        />
       ))}
       {tags.length !== tagsList.length && (
         <TouchableOpacity style={styles.spoilers} onPress={showSpoilers}>
