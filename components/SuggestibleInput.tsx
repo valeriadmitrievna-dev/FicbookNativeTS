@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { StyleSheet, TextInput, ViewStyle } from "react-native";
+import { ScrollView, StyleSheet, TextInput, ViewStyle } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -19,6 +19,7 @@ interface SuggestibleInputProps {
   item: (data: any, id: number, array: any[]) => JSX.Element;
   style?: ViewStyle;
   dropdown?: ViewStyle;
+  maxHeight?: number;
 }
 
 export default function SuggestibleInput({
@@ -26,7 +27,8 @@ export default function SuggestibleInput({
   placeholder,
   item,
   style,
-  dropdown
+  dropdown,
+  maxHeight,
 }: SuggestibleInputProps) {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -60,10 +62,10 @@ export default function SuggestibleInput({
         onPressIn={() => {
           if (height.value) {
             height.value = 0;
-            offset.value = 0
+            offset.value = 0;
           } else {
-            height.value = 10000;
-            offset.value = 5
+            height.value = maxHeight || 10000;
+            offset.value = 5;
           }
         }}
         onChange={setQuery}
@@ -72,7 +74,13 @@ export default function SuggestibleInput({
       <Animated.View style={[styles.dropdown, dropdown, animatedStyles]}>
         {!pending ? (
           !!results?.length ? (
-            results.map(item)
+            !!maxHeight ? (
+              <ScrollView nestedScrollEnabled={true}>
+                {results.map(item)}
+              </ScrollView>
+            ) : (
+              results.map(item)
+            )
           ) : (
             <CustomText ml={16} mt={10} mb={10}>
               Совпадений не найдено

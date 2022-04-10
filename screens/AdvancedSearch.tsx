@@ -48,7 +48,7 @@ export default function AdvancedSearch() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [fandomFilter, setFandomFilter] = useState<Selected>(
-    fandom_filters.find(f => f.key === "fandom")
+    fandom_filters.find(f => f.key === "any")
   );
   const [pagesFilter, setPagesFilter] = useState<Selected>(
     pages_filter.find(p => p.key === 1)
@@ -234,6 +234,7 @@ export default function AdvancedSearch() {
                 borderRadius: 2,
                 borderColor: theme.colors.text,
               }}
+              maxHeight={300}
             />
             <CustomText weight="500Medium" mb={6} mt={16}>
               Исключить фэндомы
@@ -276,6 +277,7 @@ export default function AdvancedSearch() {
                 borderRadius: 2,
                 borderColor: theme.colors.text,
               }}
+              maxHeight={300}
             />
           </View>
         )}
@@ -659,7 +661,7 @@ const createStyles = (theme: ExtendedTheme) =>
       backgroundColor: `rgba(${hexToRgb(theme.colors.card)}, 0.5)`,
       borderLeftWidth: 4,
       borderLeftColor: `rgba(${hexToRgb(theme.colors.card)}, 0.75)`,
-      paddingVertical: 6,
+      paddingVertical: 8,
       paddingHorizontal: 10,
       marginTop: 6,
     },
