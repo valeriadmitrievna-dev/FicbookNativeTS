@@ -13,9 +13,10 @@ interface TagProps {
   tag: ITag;
   onPress?: (tag: ITag) => void;
   style?: ViewStyle;
+  size?: number
 }
 
-const Tag = ({ tag, onPress, style }: TagProps) => {
+const Tag = ({ tag, onPress, style, size = 13 }: TagProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -67,7 +68,7 @@ const Tag = ({ tag, onPress, style }: TagProps) => {
           style
         ]}
       >
-        <CustomText size={13} weight={tag.adult ? "600SemiBold" : "500Medium"}>
+        <CustomText size={size} weight={tag.adult ? "600SemiBold" : "500Medium"}>
           {`${tag.title} ${tag.adult ? " 18+" : ""}`}
         </CustomText>
       </Pressable>

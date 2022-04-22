@@ -26,6 +26,8 @@ import Fanfic from "./screens/Fanfic";
 import Fandom from "./screens/Fandom";
 import CommonSearch from "./screens/CommonSearch";
 import AdvancedSearch from "./screens/AdvancedSearch";
+import Info from "./screens/Info";
+import Tags from "./screens/Tags";
 
 const CustomLightTheme: ExtendedTheme = {
   ...DefaultTheme,
@@ -83,6 +85,7 @@ const Main = () => (
     <Tab.Screen name="home" component={Home} />
     {/* <Tab.Screen name="popular" component={Popular} /> */}
     <Tab.Screen name="advancedsearch" component={AdvancedSearch} />
+    <Tab.Screen name="info" component={Info} />
   </Tab.Navigator>
 );
 
@@ -107,7 +110,7 @@ export default function App() {
         theme={scheme === "light" ? CustomLightTheme : CustomDarkTheme}
       >
         <Stack.Navigator
-          screenOptions={({ route }) => ({
+          screenOptions={() => ({
             headerShown: false,
           })}
           initialRouteName="main"
@@ -116,6 +119,7 @@ export default function App() {
           <Stack.Screen name="fanfic" component={Fanfic} />
           <Stack.Screen name="fandom" component={Fandom} />
           <Stack.Screen name="commonsearch" component={CommonSearch} />
+          <Stack.Screen name="tags" component={Tags} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

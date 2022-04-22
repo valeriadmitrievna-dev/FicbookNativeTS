@@ -58,7 +58,7 @@ export interface ITag {
   adult: boolean;
   spoiler?: boolean;
   synonyms?: string;
-  usage?: number;
+  count?: number;
 }
 
 export interface ITagInfo {

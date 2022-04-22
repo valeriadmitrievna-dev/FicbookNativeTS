@@ -23,6 +23,7 @@ const TabBarButton = ({
       {/* {route === "fandom" && <Icon name="pen-tool" size={24} color={color} />} */}
       {/* {route === "profile" && <Icon name="user" size={28} color={color} />} */}
       {route.name === "advancedsearch" && <Icon name="zoom-in" size={28} color={color} />}
+      {route.name === "info" && <Icon name="info" size={28} color={color} />}
     </Pressable>
   );
 };

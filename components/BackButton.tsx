@@ -9,9 +9,10 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 interface BackButtonProps {
   round?: boolean;
+  size?: number;
 }
 
-export default function BackButton({ round }: BackButtonProps) {
+export default function BackButton({ round, size = 36 }: BackButtonProps) {
   const theme = useTheme();
   const navigation = useNavigation<any>();
 
@@ -19,7 +20,7 @@ export default function BackButton({ round }: BackButtonProps) {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.navigate("main");
+      navigation.push("main");
     }
   };
 
@@ -27,12 +28,12 @@ export default function BackButton({ round }: BackButtonProps) {
     <Pressable onPress={goBack}>
       {round ? (
         <Icon
-          size={36}
+          size={size}
           color={theme.colors.text}
           name="arrow-back-circle-outline"
         />
       ) : (
-        <Icon size={36} color={theme.colors.text} name="arrow-back" />
+        <Icon size={size} color={theme.colors.text} name="arrow-back" />
       )}
     </Pressable>
   );
