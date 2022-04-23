@@ -78,11 +78,11 @@ export default function Promo({ promo, navigation }: PromoProps) {
           />
         </View>
         <View style={styles.promo_footer}>
-          <CustomText color={theme.colors.primary} mb={4} weight="600SemiBold">
+          <CustomText color={theme.colors.textInvert} mb={4} weight="600SemiBold">
             {promo.title}
           </CustomText>
           <CustomText
-            color={theme.colors.primary}
+            color={theme.colors.textInvert}
             size={13}
             weight="400Regular_Italic"
             numberOfLines={2}
@@ -106,7 +106,7 @@ const createStyles = (theme: ExtendedTheme) =>
       marginBottom: 20,
       flexDirection: "column",
       justifyContent: "flex-end",
-      backgroundColor: theme.colors.promo.background,
+      backgroundColor: theme.colors.primary,
     },
     direction: {
       width: 40,
@@ -122,6 +122,6 @@ const createStyles = (theme: ExtendedTheme) =>
     promo_footer: {
       width: "100%",
       padding: 5,
-      backgroundColor: `rgba(${hexToRgb(theme.colors.text)},0.5)`,
+      backgroundColor: `rgba(${hexToRgb(theme.colors.text)}, 0.75)`,
     },
   });

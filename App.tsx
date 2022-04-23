@@ -28,22 +28,22 @@ import CommonSearch from "./screens/CommonSearch";
 import AdvancedSearch from "./screens/AdvancedSearch";
 import Info from "./screens/Info";
 import Tags from "./screens/Tags";
+import Author from "./screens/Author";
 
 const CustomLightTheme: ExtendedTheme = {
   ...DefaultTheme,
   dark: false,
   colors: {
     ...DefaultTheme.colors,
-    background: colors.mainColor,
-    primary: colors.main2Color,
-    card: colors.brandColor,
-    border: colors.textColor,
-    text: colors.textColor,
-    hot: colors.orangeHEX,
-    promo: {
-      background: colors.brandColor,
-      icon: colors.main2Color,
-    },
+    background: "#DBE9D9",
+    card: "#3EB489",
+    primary: "#E4E986",
+    secondary: "#EDFDF5",
+    tertiary: "#00898B",
+    border: "#292D32",
+    text: "#292D32",
+    textInvert: "#E7E5E2",
+    hot: "#FE6900",
   },
 };
 
@@ -52,16 +52,16 @@ const CustomDarkTheme: ExtendedTheme = {
   dark: true,
   colors: {
     ...DefaultTheme.colors,
-    background: "#2d2d2f",
-    primary: "#3e3e3f",
-    card: "#696969",
-    border: colors.lightGrey,
-    text: colors.lightGrey,
-    hot: colors.orangeHEX,
-    promo: {
-      background: "#474747",
-      icon: "#e8e9eb",
-    },
+    background: "#FFEECB",
+    card: "#7D855D",
+    primary: "#A68E64",
+    secondary: "#7D855D",
+    tertiary: "#3B6B63",
+    border: "#292D32",
+    text: "#292D32",
+    textInvert: "#DFE0DF",
+    hot: "#FE6900",
+    promo: "#A68E64",
   },
 };
 
@@ -120,6 +120,7 @@ export default function App() {
           <Stack.Screen name="fandom" component={Fandom} />
           <Stack.Screen name="commonsearch" component={CommonSearch} />
           <Stack.Screen name="tags" component={Tags} />
+          <Stack.Screen name="author" component={Author} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

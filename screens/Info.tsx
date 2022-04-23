@@ -105,7 +105,7 @@ const Info = () => {
           Получите весь список тегов и информацию о них с примерами работ
         </CustomText>
         <Pressable style={styles.link} onPress={() => navigation.push("tags")}>
-          <CustomText mr={6}>Перейти</CustomText>
+          <CustomText mr={6} weight="500Medium">Перейти</CustomText>
           <Icon name="arrow-right" size={16} color={theme.colors.text} />
         </Pressable>
       </View>
@@ -145,7 +145,7 @@ const createStyles = (theme: ExtendedTheme) =>
       borderRadius: 4,
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: theme.colors.primary,
+      backgroundColor: theme.colors.tertiary,
       alignSelf: "flex-end",
     },
   });

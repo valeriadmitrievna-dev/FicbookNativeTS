@@ -127,6 +127,16 @@ export interface IAuthor {
   id: string;
   info?: string;
   avatar?: string;
+  description?: { title: string; text: string }[];
+  counts?: {
+    works?: number;
+    coauthor?: number;
+    beta?: number;
+    requests?: number;
+    collections?: number;
+  };
+  works?: IFanfic[];
+  requests?: IRequest[];
 }
 
 export interface IPart {
@@ -151,4 +161,11 @@ export interface IFicContent {
 export interface ScrollToObject {
   y: number;
   loaded: boolean;
+}
+
+export interface ICollection {
+  title: string;
+  count: number;
+  author: IAuthor;
+  available: boolean;
 }

@@ -1,12 +1,13 @@
 import React from "react";
 
-export const usePromise = <T = unknown>(
+export const usePromise = <T>(
   promiseOrFunction: Promise<any> | Function | undefined,
   defaultValue?: any,
-  deps?: any
+  deps?: any,
+  condition: boolean = true
 ) => {
   type HookState = {
-    value: T;
+    value?: T;
     error: any;
     isPending: boolean;
   };
@@ -26,7 +27,7 @@ export const usePromise = <T = unknown>(
       }));
     }
 
-    if (!!promiseOrFunction) {
+    if (!!promiseOrFunction && condition) {
       const promise =
         typeof promiseOrFunction === "function"
           ? promiseOrFunction()

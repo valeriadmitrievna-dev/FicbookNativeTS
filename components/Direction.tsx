@@ -27,6 +27,8 @@ export default function Direction({
 }: DirectionProps) {
   const theme = useTheme();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
+  const _color =
+    color || (inside ? theme.colors.textInvert : colors.direction[direction]);
 
   return (
     <View
@@ -40,84 +42,28 @@ export default function Direction({
       ]}
     >
       {direction === "het" && (
-        <FAIcon
-          name="venus-mars"
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          size={size}
-        />
+        <FAIcon name="venus-mars" color={_color} size={size} />
       )}
       {direction === "gen" && (
-        <MCIcon
-          name="sword"
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          size={size}
-        />
+        <MCIcon name="sword" color={_color} size={size} />
       )}
       {direction === "femslash" && (
-        <FAIcon
-          name="venus-double"
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          size={size}
-        />
+        <FAIcon name="venus-double" color={_color} size={size} />
       )}
       {direction === "slash" && (
-        <FAIcon
-          name="mars-double"
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          size={size}
-        />
+        <FAIcon name="mars-double" color={_color} size={size} />
       )}
       {direction === "mixed" && (
-        <MCIcon
-          name="gender-transgender"
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          size={size}
-        />
+        <MCIcon name="gender-transgender" color={_color} size={size} />
       )}
       {direction === "other" && (
-        <FAIcon
-          name="circle-notch"
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          size={size}
-        />
+        <FAIcon name="circle-notch" color={_color} size={size} />
       )}
       {direction === "article" && (
-        <MIcon
-          name="article"
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          size={size}
-        />
+        <MIcon name="article" color={_color} size={size} />
       )}
       {titled && (
-        <CustomText
-          color={
-            color ||
-            (inside ? theme.colors.primary : colors.direction[direction])
-          }
-          weight="500Medium"
-          ml={6}
-        >
+        <CustomText color={_color} weight="500Medium" ml={6}>
           {directions.find(d => d.key === direction).value}
         </CustomText>
       )}

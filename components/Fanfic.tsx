@@ -5,7 +5,6 @@ import { IAuthor, IFandom, IFanfic, IRatingNumber } from "../interfaces";
 import CustomText from "./CustomText";
 import { colors } from "../utils/colors";
 import Icon from "react-native-vector-icons/Ionicons";
-import Tag from "./Tag";
 import Tags from "./Tags";
 import TextArray from "./TextArray";
 
@@ -24,7 +23,9 @@ export default function Fanfic({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const pressAuthor = (a: IAuthor) => {
-    console.log(a.name);
+    navigation.push("author", {
+      id: a.id,
+    });
   };
   const pressTitle = () => {
     navigation.push("fanfic", {
@@ -81,7 +82,7 @@ export default function Fanfic({
             <CustomText
               weight="500Medium"
               size={13}
-              color={theme.colors.primary}
+              color={theme.colors.textInvert}
             >
               {fanfic.direction.title}
             </CustomText>
@@ -98,7 +99,7 @@ export default function Fanfic({
               <Icon
                 name="globe-outline"
                 size={14}
-                color={theme.colors.primary}
+                color={theme.colors.textInvert}
               />
             </View>
           )}
@@ -113,7 +114,7 @@ export default function Fanfic({
             <CustomText
               size={13}
               weight="500Medium"
-              color={theme.colors.primary}
+              color={theme.colors.textInvert}
             >
               {fanfic.rating.value}
             </CustomText>
@@ -142,11 +143,11 @@ export default function Fanfic({
               },
             ]}
           >
-            <Icon name="thumbs-up" size={12} color={theme.colors.primary} />
+            <Icon name="thumbs-up" size={12} color={theme.colors.textInvert} />
             <CustomText
               size={13}
               weight="500Medium"
-              color={theme.colors.primary}
+              color={theme.colors.textInvert}
               ml={4}
             >
               {fanfic.likes.title}
@@ -161,11 +162,11 @@ export default function Fanfic({
                 },
               ]}
             >
-              <Icon name="trophy" size={12} color={theme.colors.primary} />
+              <Icon name="trophy" size={12} color={theme.colors.textInvert} />
               <CustomText
                 size={13}
                 weight="500Medium"
-                color={theme.colors.primary}
+                color={theme.colors.textInvert}
                 ml={4}
               >
                 {fanfic.rewards.value}
@@ -184,7 +185,7 @@ export default function Fanfic({
                 },
               ]}
             >
-              <Icon name="flame" size={16} color={theme.colors.primary} />
+              <Icon name="flame" size={16} color={theme.colors.textInvert} />
             </View>
           )}
         </View>
@@ -247,7 +248,7 @@ const createStyles = (theme: ExtendedTheme) =>
   StyleSheet.create({
     container: {
       paddingBottom: 8,
-      backgroundColor: theme.colors.primary,
+      backgroundColor: theme.colors.secondary,
       marginBottom: 16,
       borderRadius: 4,
       borderLeftWidth: 6,
@@ -262,7 +263,6 @@ const createStyles = (theme: ExtendedTheme) =>
       paddingBottom: 3,
       borderBottomLeftRadius: 3,
       borderBottomEndRadius: 3,
-      backgroundColor: theme.colors.card,
       marginRight: 4,
       flexDirection: "row",
       alignItems: "center",

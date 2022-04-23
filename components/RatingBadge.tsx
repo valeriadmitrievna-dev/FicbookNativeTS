@@ -34,7 +34,7 @@ export default function RatingBadge({
     >
       <CustomText
         size={size}
-        color={color || theme.colors.primary}
+        color={color || theme.colors.textInvert}
         weight="500Medium"
       >
         {rating}

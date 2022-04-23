@@ -1,22 +1,20 @@
+import { ColorValue } from "react-native";
 import "@react-navigation/native";
-
-interface PromoTheme {
-  background: string;
-  icon: string;
-}
 
 declare module "@react-navigation/native" {
   export type ExtendedTheme = {
     dark: boolean;
     colors: {
-      background: string;
-      primary: string;
-      card: string;
-      border: string;
-      text: string;
-      hot: string;
-      text: string;
-      promo: PromoTheme;
+      background: ColorValue;
+      card: ColorValue;
+      primary: ColorValue;
+      secondary: ColorValue;
+      tertiary: ColorValue;
+      border: ColorValue;
+      text: ColorValue;
+      textInvert: ColorValue;
+      hot: ColorValue;
+      promo: ColorValue;
     } & Theme;
   };
   export function useTheme(): ExtendedTheme;

@@ -33,23 +33,27 @@ export default function NavigatedList({
   const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <View style={listStyle}>
-      <Navigation
-        currentPage={currentPage}
-        pages={pages}
-        onNextPage={onNextPage}
-        onPrevPage={onPrevPage}
-        isLoading={isLoading}
-        style={{ marginBottom: 24 }}
-      />
+      {pages > 1 && (
+        <Navigation
+          currentPage={currentPage}
+          pages={pages}
+          onNextPage={onNextPage}
+          onPrevPage={onPrevPage}
+          isLoading={isLoading}
+          style={{ marginBottom: 24 }}
+        />
+      )}
       {isLoading ? <SmallLoader /> : data.map(renderItem)}
-      <Navigation
-        currentPage={currentPage}
-        pages={pages}
-        onNextPage={onNextPage}
-        onPrevPage={onPrevPage}
-        isLoading={isLoading}
-        style={{ marginTop: 8, marginBottom: 64 }}
-      />
+      {pages > 1 && (
+        <Navigation
+          currentPage={currentPage}
+          pages={pages}
+          onNextPage={onNextPage}
+          onPrevPage={onPrevPage}
+          isLoading={isLoading}
+          style={{ marginTop: 8, marginBottom: 64 }}
+        />
+      )}
     </View>
   );
 }

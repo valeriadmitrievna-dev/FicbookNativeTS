@@ -49,6 +49,9 @@ const CommonSearch = () => {
       },
     });
   };
+  const getAuthor = (id: string) => {
+    navigation.push("author", { id });
+  };
 
   return (
     <PageContainer fullHeight>
@@ -263,7 +266,7 @@ const CommonSearch = () => {
             ]}
           >
             {users.data.map((u: any) => (
-              <Pressable style={styles.user}>
+              <Pressable style={styles.user} onPress={() => getAuthor(u.id)}>
                 <Image source={{ uri: u.avatar_path }} style={styles.avatar} />
                 <CustomText weight="500Medium" ml={6}>
                   {u.nickname}
