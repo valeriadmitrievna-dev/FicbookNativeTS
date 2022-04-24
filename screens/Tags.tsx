@@ -1,6 +1,10 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native";
-import React, {  useMemo, useState } from "react";
-import { ExtendedTheme, useTheme } from "@react-navigation/native";
+import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import React, { useMemo, useState } from "react";
+import {
+  ExtendedTheme,
+  useNavigation,
+  useTheme,
+} from "@react-navigation/native";
 import CustomText from "../components/CustomText";
 import BackButton from "../components/BackButton";
 import API from "../api";
@@ -13,6 +17,7 @@ import { usePromise } from "../hooks/usePromise";
 export default function Tags() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const navigation = useNavigation<any>();
 
   const [page, setPage] = useState<number>(1);
 
@@ -22,9 +27,13 @@ export default function Tags() {
   const getTags = API.get(`/tags?p=${page}`).then(d => d.data);
   const [{ tags, pages }, error, pending] = usePromise(getTags, {}, [page]);
 
+  const toTag = (tag: ITag) => {
+    navigation.push("tag", { tag });
+  };
+
   return (
     <PageContainer>
-      <View style={styles.row}>
+      <View style={[styles.row, { marginBottom: 16 }]}>
         <CustomText weight="600SemiBold" size={18}>
           Теги
         </CustomText>
@@ -38,7 +47,11 @@ export default function Tags() {
         isLoading={pending}
         data={tags || []}
         renderItem={(item: ITag, id: number) => (
-          <TouchableOpacity style={styles.tag} key={id}>
+          <TouchableOpacity
+            style={styles.tag}
+            key={id}
+            onPress={() => toTag(item)}
+          >
             <View style={[styles.row, { justifyContent: "flex-start" }]}>
               <Tag
                 tag={item}
@@ -46,7 +59,10 @@ export default function Tags() {
                 size={15}
                 style={{ marginBottom: 0 }}
               />
-              <CustomText weight="500Medium" ml={8}>x </CustomText>
+              <CustomText weight="500Medium" ml={8}>
+                x
+              </CustomText>
+              <Text> </Text>
               <CustomText weight="500Medium">{item.count}</CustomText>
             </View>
             <CustomText>{item.description}</CustomText>

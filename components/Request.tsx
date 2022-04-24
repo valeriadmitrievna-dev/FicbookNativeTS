@@ -21,6 +21,11 @@ export default function Request({ request, navigation }: RequestProps) {
       fandom: f,
     });
   };
+
+  const goToRequest = () => {
+    navigation.push("request", { request });
+  };
+
   return (
     <View style={styles.container}>
       {request.hot && (
@@ -42,7 +47,13 @@ export default function Request({ request, navigation }: RequestProps) {
           <CustomText ml={4}>{request.works}</CustomText>
         </View>
       </View>
-      <CustomText weight="500Medium" size={17} mb={5} underlined>
+      <CustomText
+        weight="500Medium"
+        size={17}
+        mb={5}
+        underlined
+        onPress={goToRequest}
+      >
         {request.title}
       </CustomText>
       <Text style={{ marginBottom: 5 }}>

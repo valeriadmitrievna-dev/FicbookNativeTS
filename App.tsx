@@ -29,6 +29,8 @@ import AdvancedSearch from "./screens/AdvancedSearch";
 import Info from "./screens/Info";
 import Tags from "./screens/Tags";
 import Author from "./screens/Author";
+import Tag from "./screens/Tag";
+import Request from "./screens/Request";
 
 const CustomLightTheme: ExtendedTheme = {
   ...DefaultTheme,
@@ -120,7 +122,9 @@ export default function App() {
           <Stack.Screen name="fandom" component={Fandom} />
           <Stack.Screen name="commonsearch" component={CommonSearch} />
           <Stack.Screen name="tags" component={Tags} />
+          <Stack.Screen name="tag" component={Tag} />
           <Stack.Screen name="author" component={Author} />
+          <Stack.Screen name="request" component={Request} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

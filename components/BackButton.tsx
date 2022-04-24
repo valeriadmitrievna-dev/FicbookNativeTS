@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, ViewStyle } from "react-native";
 import React from "react";
 import {
   ExtendedTheme,
@@ -10,9 +10,10 @@ import Icon from "react-native-vector-icons/Ionicons";
 interface BackButtonProps {
   round?: boolean;
   size?: number;
+  style?: ViewStyle;
 }
 
-export default function BackButton({ round, size = 36 }: BackButtonProps) {
+export default function BackButton({ round, size = 36, style }: BackButtonProps) {
   const theme = useTheme();
   const navigation = useNavigation<any>();
 
@@ -25,7 +26,7 @@ export default function BackButton({ round, size = 36 }: BackButtonProps) {
   };
 
   return (
-    <Pressable onPress={goBack}>
+    <Pressable onPress={goBack} style={style}>
       {round ? (
         <Icon
           size={size}

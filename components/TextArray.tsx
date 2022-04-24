@@ -13,7 +13,7 @@ interface TextArrayProps {
 }
 
 const TextArray = ({
-  array,
+  array = [],
   title,
   onPress,
   underlined,

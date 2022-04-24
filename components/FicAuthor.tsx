@@ -1,30 +1,49 @@
-import { Pressable, StyleSheet, Image, View } from "react-native";
+import { Pressable, StyleSheet, Image, View, ViewStyle } from "react-native";
 import React, { useMemo } from "react";
-import { ExtendedTheme, useTheme } from "@react-navigation/native";
+import {
+  ExtendedTheme,
+  useNavigation,
+  useTheme,
+} from "@react-navigation/native";
 import { IAuthor } from "../interfaces";
 import CustomText from "./CustomText";
 
 interface FicAuthorProps {
   author: IAuthor;
+  style?: ViewStyle;
+  scale?: number;
 }
 
-export default function FicAuthor({ author }: FicAuthorProps) {
+export default function FicAuthor({
+  author,
+  style,
+  scale = 1,
+}: FicAuthorProps) {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const navigation = useNavigation<any>();
 
   const getAuthor = () => {
-    console.log(author.name);
-    console.log(author.id);
+    navigation.push("author", { id: author.id });
   };
 
   return (
-    <Pressable style={styles.container} onPress={getAuthor}>
-      <Image source={{ uri: author.avatar }} style={styles.avatar} />
+    <Pressable style={[styles.container, style]} onPress={getAuthor}>
+      <Image source={{ uri: author.avatar }} style={[styles.avatar, {
+        width: 36 * scale,
+        height: 36 * scale,
+        borderRadius: 36 * scale,
+      }]} />
       <View>
-        <CustomText line={24} underlined weight="500Medium">
+        <CustomText
+          line={24 * scale}
+          size={15 * scale}
+          underlined
+          weight="500Medium"
+        >
           {author.name}
         </CustomText>
-        <CustomText italic size={12} line={14}>
+        <CustomText italic size={12 * scale} line={14 * scale}>
           {author.info}
         </CustomText>
       </View>
@@ -41,9 +60,6 @@ const createStyles = (theme: ExtendedTheme) =>
       marginBottom: 14,
     },
     avatar: {
-      width: 36,
-      height: 36,
-      borderRadius: 22,
       borderWidth: 2,
       borderColor: theme.colors.card,
       marginRight: 8,
